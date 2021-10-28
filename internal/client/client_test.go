@@ -3,6 +3,8 @@ package client
 import (
 	"bytes"
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -18,17 +20,31 @@ func TestClient_Run(t *testing.T) {
 
 	tests := []struct {
 		name   string
+		names  []string
 		expect string
 	}{
 		{
-			name:   "should...",
+			name:   "should correctly handle an empty list of names",
+			names:  nil,
 			expect: "Message:  Hello, World!\n",
+		},
+		{
+			name:  "should correctly handle a list of names",
+			names: []string{"Tom", "Orson", "Kurt"},
+			expect: `Message: Given: "Tom" Hello, Tom!
+Message: Given: "Orson" Hello, Orson!
+Message: Given: "Kurt" Hello, Kurt!
+`,
+		},
+		{
+			name:   "should correctly handle errors when using a list of names",
+			names:  []string{"error"}, // we are going to watch for this particular string when creating mocks
+			expect: "error messaging server oops! something went wrong\n",
 		},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var buf bytes.Buffer
-
 			// write to a buffer instead of stdout
 			log.SetOutput(&buf)
 			// no date stamp - because those are a pain to test
@@ -37,18 +53,52 @@ func TestClient_Run(t *testing.T) {
 				log.SetOutput(os.Stderr)
 			}()
 
-			server := &mockServer{}
+			// use a mock grpc service - we are testing we send the correct requests and handle the responses correctly
+			mServer := &mockServer{}
 
-			server.On("HelloWorld", mock.Anything, &_grpc.HelloRequest{}).Return(&_grpc.HelloResponse{Response: "Hello, World!"}, nil)
-
-			c := Client{
-				client: server,
-				// names:  tc.names,
+			// mock each of the expected HelloWorld request
+			if len(tc.names) == 0 {
+				mServer.On(
+					"HelloWorld",
+					mock.Anything,
+					&_grpc.HelloRequest{},
+				).Return(
+					&_grpc.HelloResponse{Response: "Hello, World!"},
+					nil,
+				)
 			}
 
-			c.Run(context.Background())
+			for _, name := range tc.names {
+				if name == "error" {
+					mServer.On(
+						"HelloWorld",
+						mock.Anything,
+						&_grpc.HelloRequest{Name: name},
+					).Return(
+						(*_grpc.HelloResponse)(nil),
+						errors.New("oops! something went wrong"),
+					)
+				}
+
+				mServer.On(
+					"HelloWorld",
+					mock.Anything,
+					&_grpc.HelloRequest{Name: name},
+				).Return(
+					&_grpc.HelloResponse{Response: fmt.Sprintf("Hello, %s!", name)},
+					nil,
+				)
+			}
+
+			c := Client{
+				client: mServer,
+			}
+
+			c.Run(context.Background(), tc.names...)
 
 			assert.Equal(t, tc.expect, buf.String())
+			// assert all expected calls to the mServer were made
+			mServer.AssertExpectations(t)
 		})
 	}
 }

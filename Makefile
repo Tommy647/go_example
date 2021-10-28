@@ -1,15 +1,15 @@
 
-docker:
-	docker compose up -d --build
+start:
+	@-docker compose up -d --build
 
-docker-stop:
-	docker compose down
+stop:
+	@docker compose down
 
-docker-logs:
-	docker compose logs -f -t
+logs:
+	@docker compose logs -f -t
 
 run-server:
-	go run cmd/server/main.go
+	@go run cmd/server/main.go
 
 generate: clean
 	@protoc --proto_path=. \
@@ -20,12 +20,12 @@ generate: clean
 		   grpc.proto
 
 test:
-	@go test ./... --cover -count=1
+	@-go test ./... --cover -count=1
 
 grpcui:
-	grpcui -plaintext localhost:9090
-
-
+	@grpcui -plaintext localhost:9090
 
 clean:
 	@-rm *.pb.go 2> /dev/null ||:
+
+all: clean generate test start stop
