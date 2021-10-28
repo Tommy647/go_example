@@ -26,14 +26,14 @@ func TestClient_Run(t *testing.T) {
 		{
 			name:   "should correctly handle an empty list of names",
 			names:  nil,
-			expect: "Message:  Hello, World!\n",
+			expect: "Message: Hello, World!\n",
 		},
 		{
 			name:  "should correctly handle a list of names",
 			names: []string{"Tom", "Orson", "Kurt"},
-			expect: `Message: Given: "Tom" Hello, Tom!
-Message: Given: "Orson" Hello, Orson!
-Message: Given: "Kurt" Hello, Kurt!
+			expect: `Message: Hello, Tom!
+Message: Hello, Orson!
+Message: Hello, Kurt!
 `,
 		},
 		{
@@ -91,7 +91,8 @@ Message: Given: "Kurt" Hello, Kurt!
 			}
 
 			c := Client{
-				client: mServer,
+				client:  mServer,
+				workers: 1,
 			}
 
 			c.Run(context.Background(), tc.names...)

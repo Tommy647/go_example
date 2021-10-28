@@ -4,6 +4,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -13,6 +14,11 @@ import (
 
 func main() {
 	log.Println("client starting") // prove the client is up
+	// create a new context that expires in 10 seconds
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	// close the context when we leave this function
+	defer cancel()
 
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(), // just for development
@@ -29,6 +35,8 @@ func main() {
 	c := client.New(
 		client.WithHelloWorldClient(hwClient), // give it our gRPC client
 	)
-	// start our client running
-	c.Run(context.Background())
+	// start our client running with no input
+	c.Run(ctx)
+	// reuse the client and add some names
+	c.Run(ctx, "Tom", "Orson", "Kurt")
 }
