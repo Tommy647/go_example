@@ -1,4 +1,4 @@
-package server
+package grpcserver
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/Tommy647/grpc"
+	grpc "github.com/Tommy647/go_example"
 )
 
 func TestHelloWorldServer_HelloWorld(t *testing.T) {
@@ -55,7 +55,7 @@ func TestHelloWorldServer_HelloWorld(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), tc.ctxTimeout)
 			defer cancel()
 
-			got, err := (HelloWorldServer{}).HelloWorld(ctx, tc.in)
+			got, err := (HelloWorldServer{}).Hello(ctx, tc.in)
 
 			if tc.wantErr != nil {
 				assert.Error(t, err)

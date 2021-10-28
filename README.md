@@ -12,8 +12,9 @@ I am deliberately ignoring the generated files in git so the user can ensure the
 
 ### Requirements
 * Go install and go/bin in $PATH 
-* Go Plugins 
+* Go Plugins
+  * go install go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
   * go install google.golang.org/grpc@latest
-    * go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  * go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 * [protoc](https://grpc.io/docs/protoc-installation/)
 * Docker

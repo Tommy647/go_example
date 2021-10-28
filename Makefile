@@ -28,4 +28,7 @@ grpcui:
 clean:
 	@-rm *.pb.go 2> /dev/null ||:
 
-all: clean generate test start stop
+lint:
+	@golangci-lint run --config=.golangci.yaml ./...
+
+all: clean generate lint test start stop

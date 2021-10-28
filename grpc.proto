@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/Tommy647/grpc";
+option go_package = "github.com/Tommy647/go_example";
 
 // HelloResponse message for Hello requests
 message HelloResponse {
@@ -12,6 +12,6 @@ message HelloRequest {
 }
 
 service HelloWorldService {
-  // HelloWorld a simple request/response example
-  rpc HelloWorld (HelloRequest) returns (HelloResponse);
+  // Hello a simple request/response example
+  rpc Hello (HelloRequest) returns (HelloResponse);
 }

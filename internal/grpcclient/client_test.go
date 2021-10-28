@@ -1,4 +1,4 @@
-package client
+package grpcclient
 
 import (
 	"bytes"
@@ -13,11 +13,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
 
-	_grpc "github.com/Tommy647/grpc"
+	_grpc "github.com/Tommy647/go_example"
 )
 
 func TestClient_Run(t *testing.T) {
-
 	tests := []struct {
 		name   string
 		names  []string
@@ -39,7 +38,7 @@ Message: Hello, Kurt!
 		{
 			name:   "should correctly handle errors when using a list of names",
 			names:  []string{"error"}, // we are going to watch for this particular string when creating mocks
-			expect: "error messaging server oops! something went wrong\n",
+			expect: "error messaging grpcServer oops! something went wrong\n",
 		},
 	}
 	for _, tc := range tests {
@@ -58,36 +57,20 @@ Message: Hello, Kurt!
 
 			// mock each of the expected HelloWorld request
 			if len(tc.names) == 0 {
-				mServer.On(
-					"HelloWorld",
-					mock.Anything,
-					&_grpc.HelloRequest{},
-				).Return(
-					&_grpc.HelloResponse{Response: "Hello, World!"},
-					nil,
-				)
+				mServer.On("Hello", mock.Anything, &_grpc.HelloRequest{}).
+					Return(&_grpc.HelloResponse{Response: "Hello, World!"}, nil)
 			}
 
 			for _, name := range tc.names {
 				if name == "error" {
 					mServer.On(
-						"HelloWorld",
-						mock.Anything,
-						&_grpc.HelloRequest{Name: name},
-					).Return(
-						(*_grpc.HelloResponse)(nil),
-						errors.New("oops! something went wrong"),
-					)
+						"Hello", mock.Anything, &_grpc.HelloRequest{Name: name}).
+						Return((*_grpc.HelloResponse)(nil), errors.New("oops! something went wrong"))
 				}
 
-				mServer.On(
-					"HelloWorld",
-					mock.Anything,
-					&_grpc.HelloRequest{Name: name},
-				).Return(
-					&_grpc.HelloResponse{Response: fmt.Sprintf("Hello, %s!", name)},
-					nil,
-				)
+				mServer.On("Hello",
+					mock.Anything, &_grpc.HelloRequest{Name: name}).
+					Return(&_grpc.HelloResponse{Response: fmt.Sprintf("Hello, %s!", name)}, nil)
 			}
 
 			c := Client{
@@ -108,7 +91,7 @@ type mockServer struct {
 	mock.Mock
 }
 
-func (m *mockServer) HelloWorld(ctx context.Context, request *_grpc.HelloRequest, _ ...grpc.CallOption) (*_grpc.HelloResponse, error) {
+func (m *mockServer) Hello(ctx context.Context, request *_grpc.HelloRequest, _ ...grpc.CallOption) (*_grpc.HelloResponse, error) {
 	args := m.Called(ctx, request)
 	return args.Get(0).(*_grpc.HelloResponse), args.Error(1)
 }

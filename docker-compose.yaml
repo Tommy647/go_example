@@ -1,8 +1,8 @@
 version: "3"
 services:
-  server:
+  grpc:
     build:
       context: .
-      dockerfile: Dockerfile.server
+      dockerfile: Dockerfile.grpcserver
     ports:
     - "9090:9090"
