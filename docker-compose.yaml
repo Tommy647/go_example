@@ -6,3 +6,9 @@ services:
       dockerfile: Dockerfile.grpcserver
     ports:
     - "9090:9090"
+  http:
+    build:
+      context: .
+      dockerfile: Dockerfile.httpserver
+    ports:
+      - "8080:8080"

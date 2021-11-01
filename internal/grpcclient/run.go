@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	grpc "github.com/Tommy647/go_example"
+	"github.com/Tommy647/go_example"
 )
 
 // Run sends a request to the grpcServer and logs the response
@@ -14,7 +14,7 @@ func (c Client) Run(ctx context.Context, names ...string) {
 		return
 	}
 	// queue to hold the inputs
-	queue := make(chan *grpc.HelloRequest)
+	queue := make(chan *go_example.HelloRequest)
 
 	// wait group, so we can wait for concurrent threads to finish
 	wg := &sync.WaitGroup{}
@@ -28,11 +28,11 @@ func (c Client) Run(ctx context.Context, names ...string) {
 
 	// send a request off for each name
 	if len(names) == 0 {
-		queue <- &grpc.HelloRequest{}
+		queue <- &go_example.HelloRequest{}
 	}
 
 	for i := range names {
-		queue <- &grpc.HelloRequest{Name: names[i]}
+		queue <- &go_example.HelloRequest{Name: names[i]}
 	}
 	// close the queue - we have successfully added all the work
 	close(queue)

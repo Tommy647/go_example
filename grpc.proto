@@ -11,7 +11,7 @@ message HelloRequest {
   string Name = 1; // name to use
 }
 
-service HelloWorldService {
+service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
 }

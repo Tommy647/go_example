@@ -3,23 +3,24 @@ package grpcserver
 import (
 	"context"
 
-	grpc "github.com/Tommy647/go_example"
+	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/greeter"
 )
 
 // ensure our client implements the interface - this breaks compilation if it fails
-var _ grpc.HelloWorldServiceServer = &HelloWorldServer{}
+var _ go_example.HelloServiceServer = &HelloServer{}
 
-// HelloWorldServer provides the implementation of our gRPC service
-type HelloWorldServer struct{}
+// HelloServer provides the implementation of our gRPC service
+// has to meet the go_example.HelloServiceServer interface
+type HelloServer struct{}
 
 // New instance of our gRPC service
-func New() *HelloWorldServer {
-	return &HelloWorldServer{}
+func New() *HelloServer {
+	return &HelloServer{}
 }
 
-// HelloWorld responds to the HelloWorld gRPC call
-func (h HelloWorldServer) Hello(ctx context.Context, request *grpc.HelloRequest) (*grpc.HelloResponse, error) {
+// Hello responds to the Hello gRPC call
+func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest) (*go_example.HelloResponse, error) {
 	// ensure our context is still valid
 	select {
 	case <-ctx.Done():
@@ -27,5 +28,5 @@ func (h HelloWorldServer) Hello(ctx context.Context, request *grpc.HelloRequest)
 	default: // intentionally blank
 	}
 
-	return &grpc.HelloResponse{Response: greeter.HelloGreet(request.GetName())}, nil
+	return &go_example.HelloResponse{Response: greeter.HelloGreet(request.GetName())}, nil
 }

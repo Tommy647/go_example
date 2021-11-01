@@ -1,5 +1,5 @@
 
-start:
+start: generate
 	@-docker compose up -d --build
 
 stop:

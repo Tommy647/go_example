@@ -3,12 +3,12 @@ package grpcclient
 import (
 	"google.golang.org/grpc"
 
-	_grpc "github.com/Tommy647/go_example"
+	"github.com/Tommy647/go_example"
 )
 
 // Client to handle making the gRPC request to the grpcServer
 type Client struct {
-	client      _grpc.HelloWorldServiceClient // client for gRPC requests
+	client      go_example.HelloServiceClient // client for gRPC requests
 	conn        *grpc.ClientConn
 	workers     int    // workers to create for processing requests
 	host        string // host we attempt to connect to
@@ -45,6 +45,6 @@ func (c *Client) connect() error {
 		return err
 	}
 	// create a new client on our connection
-	c.client = _grpc.NewHelloWorldServiceClient(c.conn)
+	c.client = go_example.NewHelloServiceClient(c.conn)
 	return nil
 }
