@@ -1,34 +1,26 @@
+default: help
 
-start: generate
-	@-docker compose up -d --build
+-include make/Makefile.*
 
-stop:
-	@docker compose down
 
-logs:
-	@docker compose logs -f -t
 
-run-server:
-	@go run cmd/server/main.go
+## run all targets, as a quick smoke test
+all: clean go/generate go/lint go/test docker/start docker/stop
 
-generate: clean
-	@protoc --proto_path=. \
-		   --go_out=.  \
-		   --go-grpc_out=require_unimplemented_servers=false:. \
-		   --go-grpc_opt=paths=source_relative  \
-		   --go_opt=paths=source_relative \
-		   grpc.proto
+## This help screen
+help:
+	@printf "Available targets:\n\n"
+	@-awk '/^[a-zA-Z\-\\_0-9%:\\]+/ { \
+	  helpMessage = match(lastLine, /^## (.*)/); \
+	  if (helpMessage) { \
+		helpCommand = $$1; \
+		helpMessage = substr(lastLine, RSTART + 3, RLENGTH); \
+	gsub("\\\\", "", helpCommand); \
+	gsub(":+$$", "", helpCommand); \
+		printf "  \x1b[32;01m%-35s\x1b[0m %s\n", helpCommand, helpMessage; \
+	  } \
+	} \
+	{ lastLine = $$0 }' $(MAKEFILE_LIST) | sort -u
+	@printf "\n"
 
-test:
-	@-go test ./... --cover -count=1
-
-grpcui:
-	@grpcui -plaintext localhost:9090
-
-clean:
-	@-rm *.pb.go 2> /dev/null ||:
-
-lint:
-	@golangci-lint run --config=.golangci.yaml ./...
-
-all: clean generate lint test start stop
+.PHONY: help

@@ -1,0 +1,4 @@
+
+## get all pods in minikube
+k8s/get_pods:
+	@minikube kubectl -- get pods -A

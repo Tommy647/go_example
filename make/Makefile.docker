@@ -1,0 +1,11 @@
+## build and start the stack in docker
+docker/start: go/generate
+	@-docker compose up -d --build
+
+## stop all the docker containers
+docker/stop:
+	@docker compose down
+
+## tail the docker logs
+docker/logs:
+	@docker compose logs -f -t

@@ -45,3 +45,4 @@ Alternatively this command has been added to `make generate`
   * `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
 * [protoc](https://grpc.io/docs/protoc-installation/)
 * Docker
+* [minikube](https://minikube.sigs.k8s.io/docs/start/)
