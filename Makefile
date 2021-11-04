@@ -2,7 +2,13 @@ default: help
 
 -include make/Makefile.*
 
-
+## check requirements are installed, offers link to install page if missing
+requirements:
+	@-which go &>1 || echo golang
+	@-which protoc &>1 || echo https://grpc.io/docs/protoc-installation/
+	@-which protoc-gen-go &>1 || echo go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@-which protoc-gen-go-grpc &>1 || echo go google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	@-which docker &>1
 
 ## run all targets, as a quick smoke test
 all: clean go/generate go/lint go/test docker/start docker/stop
