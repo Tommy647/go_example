@@ -98,22 +98,6 @@ linters:
     - varcheck
     - whitespace
 
-  # don't enable:
-  # - asciicheck
-  # - scopelint
-  # - gochecknoglobals
-  # - gocognit
-  # - godot
-  # - godox
-  # - goerr113
-  # - interfacer
-  # - maligned
-  # - nestif
-  # - prealloc
-  # - testpackage
-  # - revive
-  # - wsl
-
 issues:
   exclude:
     # disable this rule for go1.15 compatibility

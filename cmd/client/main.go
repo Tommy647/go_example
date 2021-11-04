@@ -14,6 +14,7 @@ import (
 const defaultRunTimeout = 10 * time.Second
 
 func main() {
+	grp
 	log.Println("client starting") // prove the client is up
 	// create a new context that expires in 10 seconds
 	ctx, cancel := context.WithTimeout(context.Background(), defaultRunTimeout)

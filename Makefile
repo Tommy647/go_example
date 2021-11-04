@@ -4,12 +4,12 @@ default: help
 
 ## check requirements are installed, offers link to install page if missing
 requirements:
-	@-which go &>1 || echo golang
-	@-which protoc &>1 || echo https://grpc.io/docs/protoc-installation/
-	@-which protoc-gen-go &>1 || echo go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@-which protoc-gen-go-grpc &>1 || echo go google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	@-which docker &>1
-
+	@-which go > /dev/null || echo go missing
+	@-which protoc > /dev/null || echo protoc missing: https://grpc.io/docs/protoc-installation/
+	@-which protoc-gen-go > /dev/null|| echo protoc-gen-go missing:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@-which protoc-gen-go-grpc > /dev/null || echo protoc-gen-go-grpc missing:  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	@-which docker > /dev/null || echo docker missing:
+	@-which vault > /dev/null || echo vault missing: https://www.vaultproject.io/docs/install
 ## run all targets, as a quick smoke test
 all: clean go/generate go/lint go/test docker/start docker/stop
 

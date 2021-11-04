@@ -1,3 +1,4 @@
+
 ## create generated files
 go/generate: clean
 	@protoc --proto_path=. \

@@ -1,0 +1,27 @@
+VAULT_ADDR ?= 'http://127.0.0.1:8200'
+VAULT_TOKEN ?= $(ROOT_TOKEN)
+ROOT_TOKEN ?= 12345678
+
+VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(VAULT_TOKEN) vault
+
+MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+
+## get the web address for our vault instance
+vault/ui:
+	@echo $(VAULT_ADDR)
+
+## create a new token
+vault/token:
+	$(eval TOKEN:=$(shell $(VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
+	@echo $(TOKEN)
+
+## list all our secrets
+vault/list:
+	@$(VAULT_CMD) kv list secret ||:
+
+## add a secret to vault using KEY=key_name and VALUE=value_string
+vault/key/add:
+	@$(VAULT_CMD) kv put secret/$(KEY) ${VALUE}
+
+vault/test:
+	@$(MAKE) -f $(MKFILE_PATH) vault/key/add KEY=tommy VALUE="last_name=Smith title=Mr"
