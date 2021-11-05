@@ -9,14 +9,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Tommy647/go_example/internal/httpserver"
-	"github.com/Tommy647/go_example/internal/middleware"
+	"github.com/Tommy647/go_example/internal/jwt"
 )
 
 // shutdownWait duration when attempting a graceful shutdown
 const shutdownWait = 5 * time.Second
 
-// set up a simple webserver
+// set up a simple webserver to generate a token
 func main() {
 	// monitor system calls to detect a shut-down (SYSTERM||SYSINT)
 	c := make(chan os.Signal, 1)
@@ -43,10 +42,10 @@ func main() {
 func serve(ctx context.Context) error {
 	mux := http.NewServeMux()
 	// attach the handler - this pattern works well for simple apps
-	mux.Handle("/hello", middleware.WithDefault(httpserver.HandleHello(), true))
+	mux.HandleFunc("/", jwt.HandleNewToken)
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8081", // @todo: env var this
 		Handler: mux,
 	}
 	// ListenAndServe blocks until the service stops, so we run it in a go routine

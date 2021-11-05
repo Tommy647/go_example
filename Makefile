@@ -4,14 +4,14 @@ default: help
 
 ## check requirements are installed, offers link to install page if missing
 requirements:
-	@-which go &> /dev/null || echo go missing
-	@-which golangci-lint &> /dev/null || echo golangci-lint missing: https://golangci-lint.run/usage/install/
-	@-which protoc &> /dev/null || echo protoc missing: https://grpc.io/docs/protoc-installation/
-	@-which protoc-gen-go &> /dev/null|| echo protoc-gen-go missing:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@-which protoc-gen-go-grpc &> /dev/null || echo protoc-gen-go-grpc missing:  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	@-which docker &> /dev/null || echo docker missing:
-	@docker compose &> /dev/null || echo docker compose missing: https://github.com/docker/compose/tree/v2
-	@-which vault &> /dev/null || echo valut missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install
+	@-which go || echo go missing
+	@-which golangci-lint || echo golangci-lint missing: https://golangci-lint.run/usage/install/
+	@-which protoc || echo protoc missing: https://grpc.io/docs/protoc-installation/
+	@-which protoc-gen-go || echo protoc-gen-go missing:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@-which protoc-gen-go-grpc || echo protoc-gen-go-grpc missing:  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	@-which docker || echo docker missing:
+	@-docker compose stop || echo docker compose missing: https://github.com/docker/compose/tree/v2
+	@-which vault || echo valut missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install
 ## run all targets, as a quick smoke test
 all: clean go/generate go/lint go/test docker/start docker/stop
 
