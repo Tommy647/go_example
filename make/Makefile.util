@@ -3,4 +3,4 @@ grpcui:
 	@grpcui -plaintext localhost:9090
 ## remove generated files
 clean:
-	rm *.pb.go 2> /dev/null ||:
+	@-rm *.pb.go 2> /dev/null ||:
