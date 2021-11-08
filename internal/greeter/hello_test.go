@@ -1,6 +1,7 @@
 package greeter
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -36,7 +37,7 @@ func Test_HelloGreet(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := HelloGreet(tc.in)
+			got := Greeter{}.HelloGreet(context.Background(), tc.in)
 			assert.Equal(t, tc.expect, got)
 		})
 	}

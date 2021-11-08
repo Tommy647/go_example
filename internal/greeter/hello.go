@@ -1,7 +1,10 @@
 // Package greeter providers a greeting service
 package greeter
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 const (
 	// defaultGreeting if nothing is provided
@@ -10,8 +13,16 @@ const (
 	helloGreetingMessage = `Hello, %s!`
 )
 
+// New instance of a string greeter
+func New() Greeter {
+	return Greeter{}
+}
+
+// Greeter with strings
+type Greeter struct{}
+
 // HelloGreet the name in the given string or return a default value if it is empty
-func HelloGreet(in string) string {
+func (Greeter) HelloGreet(_ context.Context, in string) string {
 	greeting := defaultGreeting
 	if in != "" {
 		greeting = in

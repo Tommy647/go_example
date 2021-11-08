@@ -1,0 +1,2 @@
+CREATE INDEX idx_from_name
+ON public.name ("from");

@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS public.name (
+   "id" serial NOT NULL PRIMARY KEY,
+   "from" TEXT,
+   "to" TEXT
+);
+
+INSERT INTO public.name ("from", "to") VALUES
+('Tom', 'Tommy');

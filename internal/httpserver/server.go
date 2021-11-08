@@ -13,17 +13,18 @@ type HelloResponse struct{}
 
 // HandleHello as a http request
 func HandleHello() http.Handler {
+	g := greeter.New()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("hello http request")
 		c := jwt.GetUser(r.Context())
 		if c == nil {
-			_, _ = w.Write([]byte(greeter.HelloGreet("")))
+			_, _ = w.Write([]byte(g.HelloGreet(r.Context(), "")))
 			return
 		}
-		_, _ = w.Write([]byte(greeter.HelloGreet(c.Foo)))
-		_, _ = w.Write([]byte(greeter.HelloGreet(c.Subject)))
+		_, _ = w.Write([]byte(g.HelloGreet(r.Context(), c.Foo)))
+		_, _ = w.Write([]byte(g.HelloGreet(r.Context(), c.Subject)))
 		for i := range c.Roles {
-			_, _ = w.Write([]byte(greeter.HelloGreet(c.Roles[i])))
+			_, _ = w.Write([]byte(g.HelloGreet(r.Context(), c.Roles[i])))
 		}
 	})
 }

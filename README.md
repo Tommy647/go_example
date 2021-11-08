@@ -3,6 +3,7 @@
 A simple Go application to use for reference, incorporating most of the basic principles of application development.
 
 ## Implemented Technologies/Concepts
+* HTTP server
 * gRPC: client and server in Go using generated files
 * Docker
   * Multi-stage builds
@@ -16,7 +17,11 @@ A simple Go application to use for reference, incorporating most of the basic pr
   * Basic concurrency
   * Interfaces
   * Middleware (http and gRPC)
-  * Logger - production level
+  * TODO: Logger - production level:
+  * Database
+
+## Makefile
+All the commands needed to run the application are documented in the Makefile and its children, run `make help` for details  
 
 ## Guides for Go
 * [playground](https://play.golang.org/) - beware time always starts at 2009-11-10 23:00:00 UTC!
@@ -38,11 +43,15 @@ Alternatively this command has been added to `make generate`
 [gRPC UI](https://github.com/fullstorydev/grpcui) - handy tool for locally testing a gRPC service
 
 ### Requirements
-* Go install and go/bin in $PATH 
+* [Go](https://golang.org/) install and go/bin in $PATH 
 * Go Plugins
-  * `go install go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`
-  * `go install google.golang.org/grpc@latest`
-  * `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
+  * [golangci-lint](https://golangci-lint.run/) `go install go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`
+  * [gRPC](https://pkg.go.dev/google.golang.org/grpc) `go install google.golang.org/grpc@latest`
+  * [protoc-gen-go](https://developers.google.com/protocol-buffers/docs/overview) `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest`
+  * [protoc-gen-go-grpc](https://pkg.go.dev/google.golang.org/grpc/cmd/protoc-gen-go-grpc) `go install google.golang.org/grpc/cmd/protoc-gen-go-grpc`
 * [protoc](https://grpc.io/docs/protoc-installation/)
-* Docker
-* [minikube](https://minikube.sigs.k8s.io/docs/start/)
+* [Docker](https://www.docker.com/)
+  * [Docker Compose Plugin](https://github.com/docker/compose/tree/v2)
+* TODO:  [minikube](https://minikube.sigs.k8s.io/docs/start/)
+* [Vault](https://learn.hashicorp.com/tutorials/vault/getting-started-install)
+* [DB Migrate](https://github.com/golang-migrate/migrate/blob/master/GETTING_STARTED.md) `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1`

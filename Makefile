@@ -12,6 +12,8 @@ requirements:
 	@-which docker || echo docker missing:
 	@-docker compose stop || echo docker compose missing: https://github.com/docker/compose/tree/v2
 	@-which vault || echo valut missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install
+	@-which migrate|| echo migrate missing: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1
+
 ## run all targets, as a quick smoke test
 all: clean go/generate go/lint go/test docker/start docker/stop
 
