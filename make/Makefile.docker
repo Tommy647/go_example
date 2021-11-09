@@ -1,6 +1,7 @@
 ## build and start the stack in docker
 docker/start: go/generate
 	@-docker compose up -d --build
+	@-${MAKE} -f make/Makefile.database database/migration/init
 
 ## stop all the docker containers
 docker/stop:

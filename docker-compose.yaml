@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   db:
     image: postgres
@@ -10,7 +10,8 @@ services:
   grpc:
     build:
       context: .
-      dockerfile: Dockerfile.grpcserver
+      dockerfile: Dockerfile
+      target: grpcserver
     environment:
       GREETER: db
       DB_HOST: db # docker compose so the container image from above will resolve via dns
@@ -23,7 +24,8 @@ services:
   http:
     build:
       context: .
-      dockerfile: Dockerfile.httpserver
+      dockerfile: Dockerfile
+      target: httpserver
     ports:
       - "8080:8080"
   vault:
@@ -38,6 +40,7 @@ services:
   jwt:
     build:
       context: .
-      dockerfile: Dockerfile.jwtserver
+      dockerfile: Dockerfile
+      target: jwtserver
     ports:
     - "8081:8081"
