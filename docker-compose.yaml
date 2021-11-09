@@ -8,10 +8,7 @@ services:
     ports:
       - "5432:5432"
   grpc:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: grpcserver
+    image: grpcserver
     environment:
       GREETER: db
       DB_HOST: db # docker compose so the container image from above will resolve via dns
@@ -22,10 +19,7 @@ services:
     ports:
     - "9090:9090"
   http:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: httpserver
+    image: httpserver
     ports:
       - "8080:8080"
   vault:
@@ -38,9 +32,6 @@ services:
     ports:
     - "8200:8200"
   jwt:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: jwtserver
+    image: jwtserver
     ports:
     - "8081:8081"

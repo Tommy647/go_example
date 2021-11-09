@@ -1,5 +1,5 @@
 ## build and start the stack in docker
-docker/start: go/generate
+docker/start: go/generate docker/build
 	@-docker compose up -d --build
 	@-${MAKE} -f make/Makefile.database database/migration/init
 
@@ -10,3 +10,9 @@ docker/stop:
 ## tail the docker logs
 docker/logs:
 	@docker compose logs -f -t
+
+## build the project docker images
+docker/build:
+	@-docker build --tag grpcserver --target grpcserver .
+	@-docker build --tag httpserver --target httpserver .
+	@-docker build --tag jwtserver --target jwtserver .
