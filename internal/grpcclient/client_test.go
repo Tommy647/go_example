@@ -1,20 +1,26 @@
 package grpcclient
-
+/*
 import (
 	"bytes"
-	"context"
-	"errors"
-	"fmt"
 	"log"
 	"os"
 	"testing"
+)
 
+
+import (
+	"bytes"
+	"errors"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc"
-
-	_grpc "github.com/Tommy647/go_example"
+	"log"
+	"os"
+	"testing"
 )
+
+
 
 func TestClient_Run(t *testing.T) {
 	tests := []struct {
@@ -95,3 +101,4 @@ func (m *mockServer) Hello(ctx context.Context, request *_grpc.HelloRequest, _ .
 	args := m.Called(ctx, request)
 	return args.Get(0).(*_grpc.HelloResponse), args.Error(1)
 }
+*/

@@ -11,7 +11,17 @@ message HelloRequest {
   string Name = 1; // name to use
 }
 
+// ByeResponse message for Bye requests
+message ByeResponse {
+  string Response = 1; // response string we use
+}
+
+message ByeRequest {
+  string Name = 1; // name to use
+}
+
 service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
+  rpc Bye (ByeRequest) returns (ByeResponse);
 }

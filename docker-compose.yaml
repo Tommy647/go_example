@@ -29,7 +29,7 @@ services:
       DB_PASSWORD: example
       DB_DBNAME: postgres
     ports:
-    - "9090:9090"
+    - "8088:8088"
     healthcheck:
       test:  nc -zvw10 grpc 9090
       interval: 1s

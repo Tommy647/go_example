@@ -31,7 +31,7 @@ const (
 
 func main() {
 	// create a tcp listener for your gRPC service
-	listener, err := net.Listen("tcp", "0.0.0.0:9090") //nolint:gosec // development use only
+	listener, err := net.Listen("tcp", "0.0.0.0:8088") //nolint:gosec // development use only
 	if err != nil {
 		panic(err.Error())
 	}

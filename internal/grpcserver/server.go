@@ -20,6 +20,11 @@ type HelloServer struct {
 	greeter GreetProvider
 }
 
+// Bye responds to the Bye gRPC call
+func (h HelloServer) Bye(ctx context.Context, request *go_example.ByeRequest) (*go_example.ByeResponse, error) {
+	return &go_example.ByeResponse{Response: h.greeter.HelloGreet(ctx, request.GetName())}, nil
+}
+
 // New instance of our gRPC service
 func New(g GreetProvider) *HelloServer {
 	return &HelloServer{
