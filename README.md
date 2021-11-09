@@ -33,7 +33,7 @@ Go and the [protobuf](https://google.golang.org/protobuf) package allow us to de
 .proto files, as it is the standard, and then generate the Go code and interfaces required to implement it.
 I am deliberately ignoring the generated files in git so the user can ensure their environment can correctly generate them.  
 To generate the files you can run the following command, assuming you have installed the dependencies detailed below.  
-`protoc --proto_path=. --go_out=.  --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative grpc.proto`b  
+`protoc --proto_path=. --go_out=. --go-grpc_out=require_unimplemented_servers=false:.  --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative grpc.proto`b  
 Alternatively this command has been added to `make generate` 
 ## Principles of software development
 * [S.O.L.I.D.](https://en.wikipedia.org/wiki/SOLID) principles of software development
