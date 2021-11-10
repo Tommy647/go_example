@@ -43,7 +43,10 @@ func main() {
 func serve(ctx context.Context) error {
 	mux := http.NewServeMux()
 	// attach the handler - this pattern works well for simple apps
-	mux.Handle("/hello", middleware.WithDefault(httpserver.HandleHello(), true))
+	mux.Handle(
+		"/hello",
+		middleware.WithDefault(httpserver.HandleHello(), true),
+	)
 
 	srv := &http.Server{
 		Addr:    ":8080",
