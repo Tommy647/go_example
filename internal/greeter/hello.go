@@ -9,20 +9,20 @@ import (
 const (
 	// defaultGreeting if nothing is provided
 	defaultGreeting = `World`
-	// helloGreetingMessage as a formatting string
+	// greetingMessage as a formatting string
 	helloGreetingMessage = `Hello, %s!`
 )
 
+// Greet with strings
+type Greet struct{}
+
 // New instance of a string greeter
-func New() BasicGreeter {
-	return BasicGreeter{}
+func New() Greet {
+	return Greet{}
 }
 
-// BasicGreeter with strings
-type BasicGreeter struct{}
-
-// Greet the name in the given string or return a default value if it is empty
-func (BasicGreeter) Greet(_ context.Context, in string) string {
+// HelloGreet the name in the given string or return a default value if it is empty
+func (Greet) HelloGreet(_ context.Context, in string) string {
 	greeting := defaultGreeting
 	if in != "" {
 		greeting = in

@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBasicGreeter_Greet(t *testing.T) {
+func Test_HelloGreet(t *testing.T) {
 	cases := []struct {
 		name   string
 		in     string
@@ -37,7 +37,7 @@ func TestBasicGreeter_Greet(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := BasicGreeter{}.Greet(context.Background(), tc.in)
+			got := Greet{}.HelloGreet(context.Background(), tc.in)
 			assert.Equal(t, tc.expect, got)
 		})
 	}
