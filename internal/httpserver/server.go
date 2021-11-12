@@ -1,30 +1,127 @@
 package httpserver
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"encoding/xml"
 	"log"
 	"net/http"
+	"strings"
 
+	"github.com/pkg/errors"
+
+	_db "github.com/Tommy647/go_example/internal/db"
+	"github.com/Tommy647/go_example/internal/dbgreeter"
 	"github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/jwt"
 )
 
 // HelloResponse to http requests // @todo: fixme
-type HelloResponse struct{}
+type HelloResponse struct {
+	Response []string `json:"response" xml:"response"`
+	Error    error    `json:"error,omitempty" xml:"error"`
+}
+
+// TextEncode formatted text
+func (h HelloResponse) TextEncode(buf *bytes.Buffer) error {
+	if _, err := buf.WriteString("Responses:\n" + strings.Join(h.Response, "\n")); err != nil {
+		return err
+	}
+	if h.Error != nil {
+		if _, err := buf.WriteString("Errors:\n" + h.Error.Error() + "\n"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// GreetProvider something that greets
+type GreetProvider interface {
+	Greet(context.Context, string) string
+}
+
+// ErrNotAuthorised without jwt
+var ErrNotAuthorised = errors.New("not authorise: jwt required")
 
 // HandleHello as a http request
 func HandleHello() http.Handler {
-	g := greeter.New()
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("hello http request")
+		// try to get our user from the request context, this was added in the middleware from the jwt token
 		c := jwt.GetUser(r.Context())
+		// if the user is nil, perform the default greeting
 		if c == nil {
-			_, _ = w.Write([]byte(g.Greet(r.Context(), "")))
+			// middleware should have caught this, but better safe than sorry
+			w.WriteHeader(http.StatusForbidden)
+			_, _ = w.Write([]byte(ErrNotAuthorised.Error()))
 			return
 		}
-		_, _ = w.Write([]byte(g.Greet(r.Context(), c.Foo)))
-		_, _ = w.Write([]byte(g.Greet(r.Context(), c.Subject)))
+		// get a greeter instance, based on the headers passed in, defaults to the basic greeter
+		g, err := getGreeter(r.Header)
+		if err != nil {
+			log.Println("database", err.Error())
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
+
+		resp := HelloResponse{
+			Response: make([]string, 2, len(c.Roles)), //nolint:gomnd // not a magic number
+		}
+
+		resp.Response[0] = g.Greet(r.Context(), c.Foo)
+		resp.Response[1] = g.Greet(r.Context(), c.Subject)
+		// perform custom greetings based on the user calling this request (data from the jwt)
 		for i := range c.Roles {
-			_, _ = w.Write([]byte(g.Greet(r.Context(), c.Roles[i])))
+			resp.Response = append(resp.Response, g.Greet(r.Context(), c.Roles[i]))
+		}
+
+		data, contentType, err := formatResponse(r.Header.Get("Accept"), resp)
+		if err != nil {
+			log.Println("encoding", err.Error())
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
+		w.Header().Set("Content-Type", contentType)
+		if _, err := data.WriteTo(w); err != nil {
+			log.Println("write", err.Error())
 		}
 	})
+}
+
+// formatResponse depending on the requested 'Accept' Header values
+func formatResponse(format string, resp HelloResponse) (*bytes.Buffer, string, error) {
+	log.Println("Accept:", format)
+	buf := &bytes.Buffer{}
+	switch format {
+	case "application/xml":
+		if err := xml.NewEncoder(buf).Encode(resp); err != nil {
+			return nil, format, errors.Wrap(err, "xml")
+		}
+		return buf, format, nil
+	case "application/json":
+		if err := json.NewEncoder(buf).Encode(resp); err != nil {
+			return nil, format, errors.Wrap(err, "json")
+		}
+	default:
+		format = "application/text"
+		if err := resp.TextEncode(buf); err != nil {
+			return nil, format, errors.Wrap(err, "text")
+		}
+	}
+	log.Println("Content-Type", format)
+	return buf, format, nil
+}
+
+// getGreeter based on a header field
+func getGreeter(h http.Header) (GreetProvider, error) {
+	header := h.Get("X-Greeter")
+	if strings.EqualFold(header, "DB") {
+		db, err := _db.NewConnection()
+		if err != nil {
+			return nil, err
+		}
+		return dbgreeter.New(db), nil
+	}
+	return greeter.New(), nil
 }

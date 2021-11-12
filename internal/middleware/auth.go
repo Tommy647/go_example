@@ -21,6 +21,7 @@ func WithAuth(next http.Handler) http.Handler {
 			log.Println("getting token", err.Error())
 			w.WriteHeader(http.StatusForbidden)
 			_, _ = w.Write([]byte(err.Error()))
+			return
 		}
 
 		claims, err := jwt.GetClaims(tokenString)

@@ -35,7 +35,9 @@ Go and the [protobuf](https://google.golang.org/protobuf) package allow us to de
 .proto files, as it is the standard, and then generate the Go code and interfaces required to implement it.
 I am deliberately ignoring the generated files in git so the user can ensure their environment can correctly generate them.  
 To generate the files you can run the following command, assuming you have installed the dependencies detailed below.  
-`protoc --proto_path=. --go_out=. --go-grpc_out=require_unimplemented_servers=false:.  --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative grpc.proto`  
+
+```protoc --proto_path=. --go_out=. --go-grpc_out=require_unimplemented_servers=false:.  --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative grpc.proto```  
+
 Alternatively this command has been added to `make generate` 
 
 ## Principles of software development
@@ -43,7 +45,9 @@ Alternatively this command has been added to `make generate`
 * [12 Factor Apps](https://12factor.net/)
  
 ## Tools
-[gRPC UI](https://github.com/fullstorydev/grpcui) - handy tool for locally testing a gRPC service
+[gRPC UI](https://github.com/fullstorydev/grpcui) - handy tool for locally testing gRPC services.
+[Postman](https://www.postman.com/downloads/) - handy tool for locally testing HTTP services, import the collection and environment from the root folder.
+[JWT.io](https://jwt.io/) - for exploring JWT tokens, token never leaves the browser so safe to use.  
 
 ### Requirements
 
@@ -71,3 +75,6 @@ I've tried to keep the requirements as a check in the Makefile, run `make requir
 * Update HTTP server to provide same functionality as the gRPC service
 * Add gRPC interceptors to match http middleware
 * Redis?
+* Logging with Zap
+* Viper
+* Cobra?

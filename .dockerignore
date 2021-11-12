@@ -1,5 +1,8 @@
-Dockerfile.*
+Dockerfile
 .dockerignore
+.gitignore
 docker-compose.yaml
 Makefile
 /make
+README.md
+/db
