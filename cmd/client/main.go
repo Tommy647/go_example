@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/oauth"
 
 	"github.com/Tommy647/go_example/internal/grpcclient"
 )
@@ -22,7 +23,14 @@ func main() {
 	// close the context when we leave this function
 	defer cancel()
 
+	// convert our jwt token to a gRPC compatible format
+	jwt, err := oauth.NewJWTAccessFromKey([]byte("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIiLCJyb2xlcyI6WyJ1c2VyIiwiaGVsbG8iXSwiaXNzIjoidGVzdCIsInN1YiI6InNvbWVib2R5IiwiYXVkIjpbInNvbWVib2R5X2Vsc2UiXSwiZXhwIjoxNjM2NzMxNzAzLCJuYmYiOjE2MzY3MjgxMDMsImlhdCI6MTYzNjcyODEwMywianRpIjoiMSJ9.R9FQidUi3WJ2KvPKB00UVF7FyKi4lPFrvYyHipQ4em8"))
+	if err != nil {
+		panic("token error " + err.Error())
+	}
+
 	opts := []grpc.DialOption{
+		grpc.WithPerRPCCredentials(jwt),
 		grpc.WithInsecure(), // just for development
 	}
 

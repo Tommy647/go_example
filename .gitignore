@@ -15,3 +15,8 @@
 vendor/
 
 /*.pb.go
+/certs/*.key
+/certs/*.cert
+/certs/*.csr
+/certs/*.pem
+/certs/*.srl

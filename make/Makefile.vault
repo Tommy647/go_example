@@ -10,6 +10,11 @@ MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 vault/ui:
 	@echo $(VAULT_ADDR)
 
+## get the vault environment variables call `$(make vault/env)` to add them to your session
+vault/env:
+	@echo export VAULT_ADDR=$(VAULT_ADDR)
+	@echo export VAULT_TOKEN=$(VAULT_TOKEN)
+
 ## create a new token
 vault/token:
 	$(eval TOKEN:=$(shell $(VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
@@ -21,7 +26,12 @@ vault/list:
 
 ## add a secret to vault using KEY=key_name and VALUE=value_string
 vault/key/add:
-	@$(VAULT_CMD) kv put secret/$(KEY) ${VALUE}
+	$(VAULT_CMD) kv put secret/go_example $(KEY)=${VALUE}
 
 vault/test:
-	@$(MAKE) -f $(MKFILE_PATH) vault/key/add KEY=tommy VALUE="last_name=Smith title=Mr"
+	@$(MAKE) -f $(MKFILE_PATH) vault/key/add KEY="tommy" VALUE="Smith"
+
+## upload self-signed certificates to vault
+vault/populate: certs/service.pem
+	@for f in $(shell ls certs | grep -v conf); do  $(VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f}; done
+

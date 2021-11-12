@@ -22,6 +22,18 @@ A simple Go application to use for reference, incorporating most of the basic pr
   * TODO: Logger - production level:
   * Database
 
+### Json Web Token (JWT)
+* [What are JWTs]()
+* [Predefined List of Claims](https://www.iana.org/assignments/jwt/jwt.xhtml) use these claim keys where possible
+
+### Vault
+[Vault](https://www.vaultproject.io/) is a key/value secrets manager from Hashicorp. Provides us with a secure, and efficient way 
+to get and retrieve secret values at runtime.  
+
+Things we are going to store in this example:
+* Secret key for signing JWTs
+* Self-Signed Certificates for TLS connections
+
 ## Makefile
 All the commands needed to run the application are documented in the Makefile and its children, run `make help` for details  
 
@@ -30,7 +42,7 @@ All the commands needed to run the application are documented in the Makefile an
 * [Go by example](https://gobyexample.com/) - good 'How to' guides for common patterns
 * [Concurrency Talk by Rob Pike](https://talks.golang.org/2012/concurrency.slide#1) - Rob Pikes talks on understand concurrency 
 
-## Generating Go code from the proto file
+### Generating Go code from the proto file
 Go and the [protobuf](https://google.golang.org/protobuf) package allow us to define our Protobuf message and services in 
 .proto files, as it is the standard, and then generate the Go code and interfaces required to implement it.
 I am deliberately ignoring the generated files in git so the user can ensure their environment can correctly generate them.  
@@ -49,7 +61,7 @@ Alternatively this command has been added to `make generate`
 [Postman](https://www.postman.com/downloads/) - handy tool for locally testing HTTP services, import the collection and environment from the root folder.
 [JWT.io](https://jwt.io/) - for exploring JWT tokens, token never leaves the browser so safe to use.  
 
-### Requirements
+## Requirements
 
 I've tried to keep the requirements as a check in the Makefile, run `make requirements` to check the required applications are available.
 
@@ -67,7 +79,7 @@ I've tried to keep the requirements as a check in the Makefile, run `make requir
 * [DB Migrate](https://github.com/golang-migrate/migrate/blob/master/GETTING_STARTED.md) `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1`
 
 
-# Todos
+## Todos
 * Run generate in docker image 
 * Add helm charts to deploy to a minikube instance
 * Use information in vault to get the jwt token
