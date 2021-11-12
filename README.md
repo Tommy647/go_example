@@ -34,6 +34,8 @@ Things we are going to store in this example:
 * Secret key for signing JWTs
 * Self-Signed Certificates for TLS connections
 
+Vault authorisation in Kubernetes example from [here](https://github.com/hashicorp/vault-examples/blob/main/go/6_auth-kubernetes.go)
+
 ## Makefile
 All the commands needed to run the application are documented in the Makefile and its children, run `make help` for details  
 

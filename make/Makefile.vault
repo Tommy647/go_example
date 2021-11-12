@@ -3,6 +3,7 @@ VAULT_TOKEN ?= $(ROOT_TOKEN)
 ROOT_TOKEN ?= 12345678
 
 VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(VAULT_TOKEN) vault
+ROOT_VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(ROOT_TOKEN) vault
 
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 
@@ -35,3 +36,5 @@ vault/test:
 vault/populate: certs/service.pem
 	@for f in $(shell ls certs | grep -v conf); do  $(VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f}; done
 
+vault/add_k8s_auth:
+	curl --insecure --header "X-Vault-Token:$(ROOT_TOKEN)" --request POST --data '{"type":"kubernetes","description":"kubernetes auth"}' $(VAULT_ADDR)/v1/sys/auth/kubernetes

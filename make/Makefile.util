@@ -10,4 +10,5 @@ clean:
      certs/*.csr \
      certs/*.pem \
      certs/*.srl \
+     secrets/kube_ca_cert \
 	 2> /dev/null ||:
