@@ -43,7 +43,7 @@ func main() {
 	// @todo: this grpcServer.GracefulStop()
 
 	// decide which function to run
-	var greeter grpcserver.Greeter = _greeter.New()
+	var greeter grpcserver.GreetProvider = _greeter.New()
 	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {

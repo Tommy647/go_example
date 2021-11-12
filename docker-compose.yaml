@@ -1,4 +1,4 @@
-version: "3.4"
+version: "3.9"
 services:
   db:
     image: postgres
@@ -7,8 +7,20 @@ services:
       POSTGRES_PASSWORD: example
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
   grpc:
     image: grpcserver
+    depends_on:
+      db:
+        condition: service_healthy
+      vault:
+         condition: service_healthy
+      jwt:
+        condition: service_healthy
     environment:
       GREETER: db
       DB_HOST: db # docker compose so the container image from above will resolve via dns
@@ -18,10 +30,20 @@ services:
       DB_DBNAME: postgres
     ports:
     - "9090:9090"
+    healthcheck:
+      test:  nc -zvw10 grpc 9090
+      interval: 1s
+      timeout: 5s
+      retries: 5
   http:
     image: httpserver
     ports:
       - "8080:8080"
+    healthcheck:
+      test: nc -zvw10  localhost 8080
+      interval: 1s
+      timeout: 5s
+      retries: 5
   vault:
     image: vault
     cap_add:
@@ -31,7 +53,20 @@ services:
       VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
     ports:
     - "8200:8200"
+    healthcheck:
+      test: nc vault 8200
+      interval: 1s
+      timeout: 5s
+      retries: 5
   jwt:
     image: jwtserver
+    depends_on:
+      vault:
+        condition: service_healthy
     ports:
     - "8081:8081"
+    healthcheck:
+      test: nc jwt 8081
+      interval: 1s
+      timeout: 5s
+      retries: 5

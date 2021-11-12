@@ -90,11 +90,11 @@ func TestGreeter_HelloGreet(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &Greeter{
+			g := &DBGreeter{
 				db: db,
 			}
 
-			got := g.HelloGreet(context.Background(), tt.in)
+			got := g.Greet(context.Background(), tt.in)
 			assert.Equal(t, tt.expect, got)
 		})
 	}

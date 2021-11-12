@@ -9,19 +9,19 @@ import (
 // ensure our client implements the interface - this breaks compilation if it fails
 var _ go_example.HelloServiceServer = &HelloServer{}
 
-// Greeter something that greets
-type Greeter interface {
-	HelloGreet(context.Context, string) string
+// GreetProvider something that greets
+type GreetProvider interface {
+	Greet(context.Context, string) string
 }
 
 // HelloServer provides the implementation of our gRPC service
 // has to meet the go_example.HelloServiceServer interface
 type HelloServer struct {
-	greeter Greeter
+	greeter GreetProvider
 }
 
 // New instance of our gRPC service
-func New(g Greeter) *HelloServer {
+func New(g GreetProvider) *HelloServer {
 	return &HelloServer{
 		greeter: g,
 	}
@@ -36,5 +36,5 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 	default: // intentionally blank
 	}
 
-	return &go_example.HelloResponse{Response: h.greeter.HelloGreet(ctx, request.GetName())}, nil
+	return &go_example.HelloResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
 }

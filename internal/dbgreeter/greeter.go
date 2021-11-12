@@ -13,25 +13,27 @@ import (
 const query = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
 
 // New returns a new instance of our database greeter
-func New(db *sql.DB) *Greeter {
-	return &Greeter{
+func New(db *sql.DB) *DBGreeter {
+	return &DBGreeter{
 		db: db,
 	}
 }
 
-// Greeter our database greeter
-type Greeter struct {
+// DBGreeter our database greeter
+type DBGreeter struct {
 	db *sql.DB
 }
 
-// HelloGreet provides our hello request, checks the DB to see
+// Greet provides our hello request, checks the DB to see
 // if `in` exists, and replaces with the DB.from
-func (g *Greeter) HelloGreet(ctx context.Context, in string) string {
+func (g *DBGreeter) Greet(ctx context.Context, in string) string {
+	// create an instance of our basic greeter to reuse
+	basicGreeter := greeter.New()
 	rows, err := g.db.QueryContext(ctx, query, in)
 	if err != nil {
 		// log out the error and continue with the default behaviour
 		log.Println("query error", err.Error())
-		return (greeter.Greeter{}).HelloGreet(ctx, in)
+		return basicGreeter.Greet(ctx, in)
 	}
 
 	// placeholder for database value
@@ -45,16 +47,16 @@ func (g *Greeter) HelloGreet(ctx context.Context, in string) string {
 			if err := rows.Close(); err != nil {
 				log.Println("row close error", err.Error())
 			}
-			return (greeter.Greeter{}).HelloGreet(ctx, in)
+			return basicGreeter.Greet(ctx, in)
 		}
 	}
 
 	// no need to rows.Close if rows.Next returned false, just check for errors
 	if err := rows.Err(); err != nil {
 		log.Println("row error", err.Error())
-		return (greeter.Greeter{}).HelloGreet(ctx, in)
+		return basicGreeter.Greet(ctx, in)
 	}
 
 	// use our original greeter to handle the final string
-	return (greeter.Greeter{}).HelloGreet(ctx, to)
+	return basicGreeter.Greet(ctx, to)
 }

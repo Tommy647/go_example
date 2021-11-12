@@ -56,7 +56,7 @@ func TestHelloWorldServer_HelloWorld(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), tc.ctxTimeout)
 			defer cancel()
 
-			got, err := (HelloServer{greeter: greeter.Greeter{}}).Hello(ctx, tc.in)
+			got, err := (HelloServer{greeter: greeter.BasicGreeter{}}).Hello(ctx, tc.in)
 
 			if tc.wantErr != nil {
 				assert.Error(t, err)
