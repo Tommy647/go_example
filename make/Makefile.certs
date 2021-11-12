@@ -2,7 +2,7 @@
 certs: certs/service.pem
 
 certs/view:
-	openssl x509 -in certs/service.pem -text -noout
+	@openssl x509 -in certs/service.pem -text -noout
 
 certs/ca.key:
 	@openssl genrsa -out certs/ca.key 4096
@@ -16,6 +16,6 @@ certs/service.csr: certs/service.key
 	@openssl req -new -key certs/service.key -out certs/service.csr -config certs/certificate.conf
 
 certs/service.pem: certs/service.csr certs/ca.cert certs/ca.key
-	openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf
+	@openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf
 
 .PHONY: certs/view

@@ -18,7 +18,7 @@ vault/env:
 
 ## create a new token
 vault/token:
-	$(eval TOKEN:=$(shell $(VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
+	$(eval TOKEN:=$(shell $(ROOT_VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
 	@echo $(TOKEN)
 
 ## list all our secrets
@@ -30,11 +30,12 @@ vault/key/add:
 	$(VAULT_CMD) kv put secret/go_example $(KEY)=${VALUE}
 
 vault/test:
-	@$(MAKE) -f $(MKFILE_PATH) vault/key/add KEY="tommy" VALUE="Smith"
+	$(MAKE) -s -f $(MKFILE_PATH) vault/key/add KEY="tommy" VALUE="Smith"
 
 ## upload self-signed certificates to vault
-vault/populate: certs/service.pem
-	@for f in $(shell ls certs | grep -v conf); do  $(VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f}; done
+vault/populate: certs vault/add_k8s_auth
+	$(ROOT_VAULT_CMD) kv put secret/certificates "updated_at"="`date`" # need the key to exist
+	for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f}; done
 
 vault/add_k8s_auth:
 	curl --insecure --header "X-Vault-Token:$(ROOT_TOKEN)" --request POST --data '{"type":"kubernetes","description":"kubernetes auth"}' $(VAULT_ADDR)/v1/sys/auth/kubernetes

@@ -1,7 +1,8 @@
 ## build and start the stack in docker
-docker/start: go/generate docker/build
+docker/start: go/generate docker/build _docker/run database/migration/init secrets/kube_ca_cert vault/populate
+
+_docker/run:
 	@-docker compose up -d --build
-	@-${MAKE} -f make/Makefile.database database/migration/init
 
 ## stop all the docker containers
 docker/stop:
