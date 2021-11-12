@@ -1,3 +1,5 @@
+// Package main an example of concurrency pipelining
+
 package main
 
 import (
@@ -8,8 +10,20 @@ import (
 	"time"
 )
 
-const maxWorkers = 1
+// maxWorkers number of workers we will create in go routines
+const maxWorkers = 4
 
+// oneSecond value to generate a random number up to one second in length
+const oneSecond = 1000
+const fiveSecond = 5000
+
+// timeout duration for the entire process
+const timeout = 10 * time.Second
+
+// randomSeed for our number generator
+const randomSeed = 647
+
+// devices dummy data to use
 var devices = map[int]device{
 	1: {id: 1},
 	2: {id: 2},
@@ -17,25 +31,29 @@ var devices = map[int]device{
 	4: {id: 4},
 }
 
-var randomSource = rand.NewSource(647)
-var randomGen = rand.New(randomSource)
+// randomGen for random numbers
+var randomGen = rand.New(rand.NewSource(randomSeed)) //nolint:gosec // basic random numbers not for crypto
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// context so we can handle timeouts
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
+	// channels for passing work through our pipeline
 	workload := make(chan int)
 	prechecks := make(chan int)
 	configchange := make(chan int)
 	postchecks := make(chan int)
 	done := make(chan int)
+
+	// create workers for each stage
 	go worker(ctx, workload, prechecks, noop)
 	go worker(ctx, prechecks, configchange, preCheck)
 	go worker(ctx, configchange, postchecks, configChange)
 	go worker(ctx, postchecks, done, postCheck)
 
 LOOP:
-	for id, _ := range devices {
+	for id := range devices {
 		log.Println("adding", id)
 		select {
 		case workload <- id: // blocks until worker is ready to accept
@@ -50,6 +68,9 @@ LOOP:
 
 	for {
 		select {
+		case <-ctx.Done():
+			log.Println(ctx.Err().Error())
+			return
 		case id, open := <-done:
 			if !open {
 				log.Println("done")
@@ -58,36 +79,36 @@ LOOP:
 			log.Printf("%d finished", id)
 		}
 	}
-
 }
 
 type device struct {
-	id                int
-	pre, config, post bool
+	id int
 }
 
-func (d device) Print() {
-	log.Printf("%d %#v", d.id, d)
-}
+// Print helper function for logging
+func (d device) Print() { log.Printf("%d %#v", d.id, d) }
 
+// work func type so we can change the function called by workers
 type work func(context.Context, int) bool
 
 // preCheck a device by ID
 func preCheck(ctx context.Context, id int) bool {
+	t := time.NewTimer(time.Duration(randomGen.Int63n(oneSecond)) * time.Millisecond)
 	select {
 	case <-ctx.Done():
 		return false
-	default: // nothing to do
+	case <-t.C: // wait for the timer to trigger, alternative to the time.Sleep
+		t.Stop()
 	}
-	time.Sleep(time.Duration(randomGen.Int63n(1000)) * time.Millisecond)
+
 	log.Println("Precheck", id)
-	if d, ok := devices[id]; ok {
-		d.pre = true
+	if _, ok := devices[id]; ok {
 		return true
 	}
 	return false
 }
 
+// noop a no-op work function
 func noop(context.Context, int) bool {
 	return true
 }
@@ -99,10 +120,9 @@ func configChange(ctx context.Context, id int) bool {
 		return false
 	default: // nothing to do
 	}
-	time.Sleep(time.Duration(randomGen.Int63n(5000)) * time.Millisecond)
+	time.Sleep(time.Duration(randomGen.Int63n(fiveSecond)) * time.Millisecond)
 	log.Println("Config change", id)
-	if d, ok := devices[id]; ok {
-		d.config = true
+	if _, ok := devices[id]; ok {
 		return true
 	}
 	return false
@@ -115,15 +135,16 @@ func postCheck(ctx context.Context, id int) bool {
 		return false
 	default: // nothing to do
 	}
-	time.Sleep(time.Duration(randomGen.Int63n(1000)) * time.Millisecond)
+	time.Sleep(time.Duration(randomGen.Int63n(oneSecond)) * time.Millisecond)
 	log.Println("Postcheck", id)
-	if d, ok := devices[id]; ok {
-		d.post = true
+	if _, ok := devices[id]; ok {
 		return true
 	}
 	return false
 }
 
+// worker our generic worker function, accepts a channel to watch for input,
+// a channel to push completed work to and a work func (f) to perform on the work unit
 func worker(ctx context.Context, input <-chan int, output chan<- int, f work) {
 	wg := sync.WaitGroup{}
 	for i := 0; i < maxWorkers; i++ {

@@ -11,6 +11,7 @@ import (
 	"github.com/Tommy647/go_example/internal/grpcclient"
 )
 
+// defaultRunTimeout for context
 const defaultRunTimeout = 10 * time.Second
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 
 	// create a new instance of our client application
 	c, err := grpcclient.New(
-		grpcclient.WithHost("localhost:9090"),
+		grpcclient.WithHost("localhost:9090"), // @todo: env var/parameter
 		grpcclient.WithDialOptions(opts...),
 	)
 	if err != nil {
