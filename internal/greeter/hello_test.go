@@ -37,7 +37,7 @@ func Test_HelloGreet(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := Greet{}.HelloGreet(context.Background(), tc.in)
+			got := Greet{}.Greet(context.Background(), tc.in)
 			assert.Equal(t, tc.expect, got)
 		})
 	}

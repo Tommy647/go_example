@@ -94,7 +94,7 @@ func TestGreeter_HelloGreet(t *testing.T) {
 				db: db,
 			}
 
-			got := g.HelloGreet(context.Background(), tt.in)
+			got := g.Greet(context.Background(), tt.in)
 			assert.Equal(t, tt.expect, got)
 		})
 	}

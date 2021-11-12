@@ -24,14 +24,14 @@ func New(db *sql.DB) *Greet {
 	}
 }
 
-// HelloGreet provides our hello request, checks the DB to see
+// Greet provides our hello request, checks the DB to see
 // if `in` exists, and replaces with the DB.from
-func (g *Greet) HelloGreet(ctx context.Context, in string) string {
+func (g *Greet) Greet(ctx context.Context, in string) string {
 	rows, err := g.db.QueryContext(ctx, query, in)
 	if err != nil {
 		// log out the error and continue with the default behaviour
 		log.Println("query error", err.Error())
-		return (greeter.Greet{}).HelloGreet(ctx, in)
+		return (greeter.Greet{}).Greet(ctx, in)
 	}
 
 	// placeholder for database value
@@ -45,16 +45,16 @@ func (g *Greet) HelloGreet(ctx context.Context, in string) string {
 			if err := rows.Close(); err != nil {
 				log.Println("row close error", err.Error())
 			}
-			return (greeter.Greet{}).HelloGreet(ctx, in)
+			return (greeter.Greet{}).Greet(ctx, in)
 		}
 	}
 
 	// no need to rows.Close if rows.Next returned false, just check for errors
 	if err := rows.Err(); err != nil {
 		log.Println("row error", err.Error())
-		return (greeter.Greet{}).HelloGreet(ctx, in)
+		return (greeter.Greet{}).Greet(ctx, in)
 	}
 
 	// use our original greeter to handle the final string
-	return (greeter.Greet{}).HelloGreet(ctx, to)
+	return (greeter.Greet{}).Greet(ctx, to)
 }

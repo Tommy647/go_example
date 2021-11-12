@@ -21,8 +21,8 @@ func New() Greet {
 	return Greet{}
 }
 
-// HelloGreet the name in the given string or return a default value if it is empty
-func (Greet) HelloGreet(_ context.Context, in string) string {
+// Greet the name in the given string or return a default value if it is empty
+func (Greet) Greet(_ context.Context, in string) string {
 	greeting := defaultGreeting
 	if in != "" {
 		greeting = in

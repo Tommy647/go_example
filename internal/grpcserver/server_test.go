@@ -3,13 +3,13 @@ package grpcserver
 import (
 	"context"
 	"errors"
+	"github.com/Tommy647/go_example/internal/greeter"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 
 	grpc "github.com/Tommy647/go_example"
-	"github.com/Tommy647/go_example/internal/greeter"
 )
 
 func TestHelloWorldServer_HelloWorld(t *testing.T) {

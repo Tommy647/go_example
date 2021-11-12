@@ -48,5 +48,5 @@ func (h HelloServer) Bye(ctx context.Context, request *go_example.ByeRequest) (*
 	default: // intentionally blank
 	}
 
-	return &go_example.ByeResponse{Response: h.greeter.HelloGreet(ctx, request.GetName())}, nil
+	return &go_example.ByeResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
 }
