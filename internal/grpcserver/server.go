@@ -39,8 +39,8 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 	return &go_example.HelloResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
 }
 
-// Bye responds to the Bye gRPC call
-func (h HelloServer) Bye(ctx context.Context, request *go_example.ByeRequest) (*go_example.ByeResponse, error) {
+// Welcome responds to the Bye gRPC call
+func (h HelloServer) Welcome(ctx context.Context, request *go_example.WelcomeRequest) (*go_example.WelcomeResponse, error) {
 	// ensure our context is still valid
 	select {
 	case <-ctx.Done():
@@ -48,5 +48,5 @@ func (h HelloServer) Bye(ctx context.Context, request *go_example.ByeRequest) (*
 	default: // intentionally blank
 	}
 
-	return &go_example.ByeResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
+	return &go_example.WelcomeResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
 }

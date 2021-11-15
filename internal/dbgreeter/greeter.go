@@ -36,6 +36,8 @@ func (g *Greet) Greet(ctx context.Context, in string) string {
 
 	// placeholder for database value
 	to := in
+
+
 	// While we have rows - we are only expecting one
 	for rows.Next() {
 		// scan the data from our row into our placeholder

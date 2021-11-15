@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"log"
 	"net"
 	"os"
@@ -15,7 +16,6 @@ import (
 
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/dbgreeter"
-	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
 )
 
@@ -44,6 +44,7 @@ func main() {
 
 	// decide which function to run
 	var greeter grpcserver.GreetProvider = _greeter.New()
+
 	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {

@@ -12,16 +12,42 @@ message HelloRequest {
 }
 
 // ByeResponse message for Bye requests
-message ByeResponse {
+message WelcomeResponse {
   string Response = 1; // response string we use
 }
 
-message ByeRequest {
+message WelcomeRequest {
   string Name = 1; // name to use
 }
 
 service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
-  rpc Bye (ByeRequest) returns (ByeResponse);
+  rpc Welcome (WelcomeRequest) returns (WelcomeResponse);
 }
+
+// Response message for an espresso requests
+message EspressoResponse {
+  string Response = 1; // response string we use
+}
+
+// Espresso request via Coffee service
+message EspressoRequest {
+  string Name = 1; // name to use
+}
+
+// Response message for a macchiato requests
+message MacchiatoResponse {
+  string Response = 1; // response string we use
+}
+
+// Macchiato request via Coffee service
+message MacchiatoRequest {
+  string Name = 1; // name to use
+}
+
+service CoffeeService {
+  rpc Espresso (EspressoRequest) returns (EspressoResponse);
+  rpc Macchiato (MacchiatoRequest) returns (MacchiatoResponse);
+}
+
