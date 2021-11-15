@@ -33,7 +33,8 @@ message EspressoResponse {
 
 // Espresso request via Coffee service
 message EspressoRequest {
-  string Name = 1; // name to use
+  string Name = 1;    // name to use
+  string Source = 2;  // source to use, local string || DB data
 }
 
 // Response message for a macchiato requests
@@ -44,6 +45,7 @@ message MacchiatoResponse {
 // Macchiato request via Coffee service
 message MacchiatoRequest {
   string Name = 1; // name to use
+  string Source = 2;  // source to use, local string || DB data
 }
 
 service CoffeeService {

@@ -42,9 +42,10 @@ func main() {
 	gRPCServer := grpc.NewServer(opts...)
 	// @todo: this grpcServer.GracefulStop()
 
+	var coffeer grpcserver.GreetProvider = _greeter.NewCoffee()
+
 	// decide which function to run
 	var greeter grpcserver.GreetProvider = _greeter.New()
-
 	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {
@@ -53,8 +54,9 @@ func main() {
 		greeter = dbgreeter.New(db)
 	}
 
-	// 'register' our gRPC service with the newly created gRPC server
+	// 'register' our gRPC services with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(greeter))
+	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.New(coffeer))
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far

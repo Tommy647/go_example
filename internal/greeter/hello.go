@@ -29,3 +29,18 @@ func (Greet) Greet(_ context.Context, in string) string {
 	}
 	return fmt.Sprintf(helloGreetingMessage, greeting)
 }
+
+
+// Coffee with strings
+type Coffee struct {}
+
+
+func NewCoffee() Coffee {
+	return Coffee{}
+}
+
+func (Coffee) Greet(_ context.Context, in string) string {
+	return fmt.Sprintln("Coffee served from strings")
+}
+
+

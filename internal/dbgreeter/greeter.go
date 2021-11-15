@@ -9,8 +9,11 @@ import (
 	"github.com/Tommy647/go_example/internal/greeter"
 )
 
-// query to get a name replacement
-const query = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
+const (
+	// query to get a name replacement
+	query       = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
+	queryCoffee = `SELECT "price" FROM "public"."coffee" WHERE "type" = $1 LIMIT 1`
+)
 
 // Greet our database greeter
 type Greet struct {
