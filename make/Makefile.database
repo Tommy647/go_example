@@ -1,25 +1,30 @@
 
-## documentation on migrations, and best practices
+## Documentation on migrations, and best practices
 database/readme:
 	@echo https://github.com/golang-migrate/migrate/blob/master/GETTING_STARTED.md
 	@echo https://github.com/golang-migrate/migrate/blob/master/MIGRATIONS.md
 
-## create a new migration file
+## Create a new migration file
 database/migration/new:
 	@migrate create -ext postgres -dir db/migrations -seq rename_me
 
-## apply all pending migrations
+## Apply all pending migrations
 database/migration/init:
+	@echo Running database migrations
 	@migrate -source file:./db/migrations -database postgres://postgres:example@localhost:5432/postgres?sslmode=disable up
 
-## apply the next migration
+## Apply the next migration
 database/migration/up:
 	@migrate -source file:./db/migrations -database postgres://postgres:example@localhost:5432/postgres?sslmode=disable up 1
 
-## undo the last migration
+## Rollback the last migration
 database/migration/down:
 	@migrate -source file:./db/migrations -database postgres://postgres:example@localhost:5432/postgres?sslmode=disable down 1
 
-## drop database schema
+## Drop database schema
 database/migration/drop:
 	@migrate -source file:./db/migrations -database postgres://postgres:example@localhost:5432/postgres?sslmode=disable drop
+
+# # Check the database specific requirements
+_database/requirements:
+	@-which migrate &>/dev/null || echo migrate missing: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1

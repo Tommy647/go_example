@@ -1,44 +1,30 @@
-# # @todo: all of this
 # # start a local kubernetes cluster
-k8s/start:
+k8s/minikube/start:
 	@minikube start
 
 # # start a local kubernetes cluster
-k8s/stop:
+k8s/minikube/stop:
 	@minikube stop
 
 # #  get all pods in minikube
-k8s/get_pods:
+k8s/minikube/get_pods:
 	@minikube kubectl -- get pods -A
 
 # # check kubctrl is connected our local cluster and present api endpoints
 k8s/cluster-check:
 	@-kubectl cluster-info
 
-# # tools to manage and run a local kubernetes cluster
-k8s/requirements:
-	@-which go || echo go missing
-	@-which minikube || echo minikube missing https://kubernetes.io/docs/tasks/tools/
-	@-which kubectl || echo kubectl missing https://kubernetes.io/docs/tasks/tools/
+# # Tools to manage and run a local kubernetes cluster
+_k8s/requirements:
+	@-which go &>/dev/null || echo go missing
+	@-which kubectl &>/dev/null || echo kubectl missing https://kubernetes.io/docs/tasks/tools/
+	@-kubectl version &>/dev/null || echo kubectl needs configuring, if you need a k8s cluster checkout https://minikube.sigs.k8s.io/docs/start/
+	@-which minikube &>/dev/null || echo minikube missing https://kubernetes.io/docs/tasks/tools/ only required if you need a k8s cluster
 
-# # get the vault service account from minikube based off the example here: https://github.com/hashicorp/vault-examples/blob/main/go/6_auth-kubernetes.go
+# # Get the vault service account from minikube based off the example here: https://github.com/hashicorp/vault-examples/blob/main/go/6_auth-kubernetes.go
 k8s/service_account:
-	# @kubectl create -f templates/vault-reviewer.yaml
-	# @kubectl apply -f templates/vault-reviewer-rbac.yaml
-	@kubectl create -f templates/vault-auth.yaml
+	@echo Creating k8s service accounts
+	@-kubectl create -f templates/vault-reviewer.yaml > /dev/null 2>&1  ||:
+	@-kubectl apply -f templates/vault-reviewer-rbac.yaml > /dev/null 2>&1  ||:
+	@-kubectl create -f templates/vault-auth.yaml > /dev/null 2>&1  ||:
 
-secrets/kube_ca_cert: vault/add_k8s_auth
-	$(eval TOKEN_REVIEWER:=$(shell kubectl get secrets | grep 'vault-reviewer-token' | awk '{ print $$1 }' ) )
-	$(eval TOKEN_REVIEW_JWT:=$(shell kubectl get secret $(TOKEN_REVIEWER) --output='go-template={{ .data.token }}' | base64 --decode))
-	$(eval KUBE_HOST=$(shell kubectl config view --raw --minify --flatten --output='jsonpath={.clusters[].cluster.server}'))
-
-	@kubectl config view --raw --minify --flatten --output='jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode > secrets/kube_ca_cert
-	$(ROOT_VAULT_CMD) write auth/kubernetes/config \
-		token_reviewer_jwt=$(TOKEN_REVIEW_JWT) \
-	  	kubernetes_host=$(KUBE_HOST) \
-	  	kubernetes_ca_cert=@secrets/kube_ca_cert \
-	  	issuer="kubernetes/serviceaccount"
-	$(ROOT_VAULT_CMD) write auth/kubernetes/role/dev-role-k8s \
-		policies="dev-policy" \
-		bound_service_account_names="my-app" \
-		bound_service_account_namespaces="default"

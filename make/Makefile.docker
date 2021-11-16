@@ -1,19 +1,26 @@
-## build and start the stack in docker
-docker/start: go/generate docker/build _docker/run database/migration/init secrets/kube_ca_cert vault/populate
+## Build and start the stack in docker
+docker/start: go/generate docker/build _docker/run database/migration/init certs/kube_ca_cert vault/populate
 
 _docker/run:
-	@-docker compose up -d --build
+	@echo Starting containers
+	@docker compose -f go_example-stack.yml up -d --build
 
-## stop all the docker containers
+## Stop all the docker containers
 docker/stop:
-	@docker compose down
+	@-docker compose down
 
-## tail the docker logs
+## Tail the docker logs
 docker/logs:
 	@docker compose logs -f -t
 
-## build the project docker images
+## Build the project docker images
 docker/build:
-	@-docker build --tag grpcserver --target grpcserver .
-	@-docker build --tag httpserver --target httpserver .
-	@-docker build --tag jwtserver --target jwtserver .
+	@echo "Building images"
+	@-docker build --quiet --tag grpcserver --target grpcserver . >/dev/null
+	@-docker build --quiet --tag httpserver --target httpserver . >/dev/null
+	@-docker build --quiet --tag jwtserver --target jwtserver . >/dev/null
+
+# # docker specific requirement checks
+_docker/requirements:
+	@-which docker &>/dev/null || echo docker missing:
+	@-docker compose version &>/dev/null || echo docker compose missing: https://github.com/docker/compose/tree/v2

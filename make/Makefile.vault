@@ -34,8 +34,15 @@ vault/test:
 
 ## upload self-signed certificates to vault
 vault/populate: certs vault/add_k8s_auth
-	$(ROOT_VAULT_CMD) kv put secret/certificates "updated_at"="`date`" # need the key to exist
-	for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f}; done
+	@echo Populating Vault with our certificates
+	@$(ROOT_VAULT_CMD) kv put secret/certificates "updated_at"="`date`" > /dev/null # need the key to exist
+	@for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f} > /dev/null ; done
 
 vault/add_k8s_auth:
-	curl --insecure --header "X-Vault-Token:$(ROOT_TOKEN)" --request POST --data '{"type":"kubernetes","description":"kubernetes auth"}' $(VAULT_ADDR)/v1/sys/auth/kubernetes
+	@echo adding k8s auth for vault
+	@-curl --silent --insecure --header "X-Vault-Token:$(ROOT_TOKEN)" --request POST --data '{"type":"kubernetes","description":"kubernetes auth"}' $(VAULT_ADDR)/v1/sys/auth/kubernetes 2>&1 > /dev/null
+
+# # Check the vault specific requirements
+# # Check the vault specific requirements
+_vault/requirements:
+	@-which vault &>/dev/null || echo valut missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install

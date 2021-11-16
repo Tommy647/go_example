@@ -16,12 +16,9 @@ services:
   grpc:
     image: grpcserver
     depends_on:
-      db:
-        condition: service_healthy
-      vault:
-         condition: service_healthy
-      jwt:
-        condition: service_healthy
+      - db
+      - vault
+      - jwt
     environment:
       GREETER: db
       DB_HOST: db # docker compose so the container image from above will resolve via dns
@@ -36,7 +33,7 @@ services:
     ports:
     - "9090:9090"
     healthcheck:
-      test:  nc -zvw10 grpc 9090
+      test: [ "CMD", "nc", "-zvw10", "localhost", "9090" ]
       interval: 1s
       timeout: 5s
       retries: 5
@@ -45,7 +42,7 @@ services:
     ports:
       - "8080:8080"
     healthcheck:
-      test: nc -zvw10  localhost 8080
+      test: [ "CMD", "nc", "-zvw10", "localhost", "8080" ]
       interval: 1s
       timeout: 5s
       retries: 5
@@ -59,19 +56,18 @@ services:
     ports:
     - "8200:8200"
     healthcheck:
-      test: nc vault 8200
+      test: [ "CMD", "nc", "-zvw10", "localhost", "8200" ]
       interval: 1s
       timeout: 5s
       retries: 5
   jwt:
     image: jwtserver
     depends_on:
-      vault:
-        condition: service_healthy
+      - vault
     ports:
     - "8081:8081"
     healthcheck:
-      test: nc jwt 8081
+      test: [ "CMD", "nc", "-zvw10", "localhost", "8081" ]
       interval: 1s
       timeout: 5s
       retries: 5
