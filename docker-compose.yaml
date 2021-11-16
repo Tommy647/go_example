@@ -29,9 +29,10 @@ services:
       DB_USER: postgres
       DB_PASSWORD: example
       DB_DBNAME: postgres
+      SERVICE_ACCOUNT: /etc/vault/kube_ca_cert
       VAULT_ADDR: vault:8200
     volumes:
-    - "./secrets/kube_ca_cert:/etc/vault/service_account"
+    - "./secrets:/etc/vault"
     ports:
     - "9090:9090"
     healthcheck:

@@ -13,7 +13,8 @@ certs/service.key:
 	@openssl genrsa -out certs/service.key 4096
 
 certs/service.csr: certs/service.key
-	@openssl req -new -key certs/service.key -out certs/service.csr -config certs/certificate.conf
+	@echo this one
+	@openssl req -new -batch -key certs/service.key -out certs/service.csr -config certs/certificate.conf
 
 certs/service.pem: certs/service.csr certs/ca.cert certs/ca.key
 	@openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf

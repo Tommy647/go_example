@@ -27,8 +27,8 @@ A simple Go application to use for reference, incorporating most of the basic pr
 * [Predefined List of Claims](https://www.iana.org/assignments/jwt/jwt.xhtml) use these claim keys where possible
 
 ### Vault
-[Vault](https://www.vaultproject.io/) is a key/value secrets manager from Hashicorp. Provides us with a secure, and efficient way 
-to get and retrieve secret values at runtime.  
+[Vault](https://www.vaultproject.io/) is a tool for managing secrets. It secures, stores and tightly controls access to tokens, 
+passwords, certificates, API keys and other secrets. 
 
 Things we are going to store in this example:
 * Secret key for signing JWTs

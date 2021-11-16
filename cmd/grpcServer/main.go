@@ -67,7 +67,7 @@ func getSecretCert() (string, error) {
 		return "", err
 	}
 
-	jwt, err := os.ReadFile("/etc/vault/service_account")
+	jwt, err := os.ReadFile(os.Getenv("SERVICE_ACCOUNT"))
 	if err != nil {
 		return "", err
 	}
