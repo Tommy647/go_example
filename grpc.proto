@@ -28,7 +28,7 @@ service HelloService {
 
 // Response message for an espresso requests
 message EspressoResponse {
-  string Response = 1; // response string we use
+  string Price = 1; // response string with the price
 }
 
 // Espresso request via Coffee service
@@ -39,7 +39,7 @@ message EspressoRequest {
 
 // Response message for a macchiato requests
 message MacchiatoResponse {
-  string Response = 1; // response string we use
+  string Price = 1; // response string with the price
 }
 
 // Macchiato request via Coffee service

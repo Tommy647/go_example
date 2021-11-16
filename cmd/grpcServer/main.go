@@ -42,17 +42,26 @@ func main() {
 	gRPCServer := grpc.NewServer(opts...)
 	// @todo: this grpcServer.GracefulStop()
 
-	var coffeer grpcserver.GreetProvider = _greeter.NewCoffee()
+
 
 	// decide which function to run
 	var greeter grpcserver.GreetProvider = _greeter.New()
-	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
+	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this func ignores case
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {
 			panic("database" + err.Error())
 		}
 		greeter = dbgreeter.New(db)
 	}
+
+	// The previous if statement checks for an Env var to be set to "db" to open a connection to the postgres DB
+	// The following will open another connection, regardless of any Env var being set. The Coffee service assumes
+	// that there will always be a DB available to fulfil the service.
+
+	// Open another DB connection
+	dbConn, err := sql.Open("postgres", getPostgresConnection())
+
+	var coffeer grpcserver.GreetProvider = dbgreeter.New(dbConn)
 
 	// 'register' our gRPC services with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(greeter))

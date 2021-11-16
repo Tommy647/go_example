@@ -30,17 +30,9 @@ func (Greet) Greet(_ context.Context, in string) string {
 	return fmt.Sprintf(helloGreetingMessage, greeting)
 }
 
-
-// Coffee with strings
-type Coffee struct {}
-
-
-func NewCoffee() Coffee {
-	return Coffee{}
-}
-
-func (Coffee) Greet(_ context.Context, in string) string {
-	return fmt.Sprintln("Coffee served from strings")
+// CoffeeGreet implements the string response when no DB is used
+func (Greet) CoffeeGreet(_ context.Context, _ string) string {
+	return fmt.Sprintln("Free Coffee served from strings")
 }
 
 

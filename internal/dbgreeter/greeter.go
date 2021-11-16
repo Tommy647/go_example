@@ -30,6 +30,7 @@ func New(db *sql.DB) *Greet {
 // Greet provides our hello request, checks the DB to see
 // if `in` exists, and replaces with the DB.from
 func (g *Greet) Greet(ctx context.Context, in string) string {
+
 	rows, err := g.db.QueryContext(ctx, query, in)
 	if err != nil {
 		// log out the error and continue with the default behaviour
@@ -62,4 +63,23 @@ func (g *Greet) Greet(ctx context.Context, in string) string {
 
 	// use our original greeter to handle the final string
 	return (greeter.Greet{}).Greet(ctx, to)
+}
+
+// CoffeeGreet provides our coffee request, looks for `in` in the DB and gets the price
+// if that kind of coffee exists, otherwise an error message is returned
+func (g *Greet) CoffeeGreet(ctx context.Context, in string) string {
+	rows, err := g.db.QueryContext(ctx, queryCoffee, in)
+	if err != nil {
+		log.Println("query error", err.Error())
+		// return "coffee served from string"
+		return (greeter.Greet{}).CoffeeGreet(ctx, in)
+	}
+	// while we have rows to go through - we expect only one
+	for rows.Next() {
+		// scan the data from our row into our placeholder
+		if err:= rows.Scan(&in); err != nil {
+			log.Println("row close error", err.Error())
+		}
+	}
+	return in
 }
