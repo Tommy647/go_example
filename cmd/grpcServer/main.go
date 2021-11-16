@@ -56,16 +56,16 @@ func main() {
 
 	// The previous if statement checks for an Env var to be set to "db" to open a connection to the postgres DB
 	// The following will open another connection, regardless of any Env var being set. The Coffee service assumes
-	// that there will always be a DB available to fulfil the service.
+	// that within the request the required source would be indicated, which means this can't be determined in advanced.
 
 	// Open another DB connection
 	dbConn, err := sql.Open("postgres", getPostgresConnection())
 
-	var coffeer grpcserver.GreetProvider = dbgreeter.New(dbConn)
+	var coffeer grpcserver.CoffeeProvider = dbgreeter.New(dbConn)
 
 	// 'register' our gRPC services with the newly created gRPC server
-	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(greeter))
-	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.New(coffeer))
+	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.NewHS(greeter))
+	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.NewCS(coffeer))
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far

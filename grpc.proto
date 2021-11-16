@@ -26,30 +26,20 @@ service HelloService {
   rpc Welcome (WelcomeRequest) returns (WelcomeResponse);
 }
 
-// Response message for an espresso requests
-message EspressoResponse {
+
+// Coffee request via Coffee service
+message CoffeeRequest {
+  string Type = 1;    // type of coffee to serve: espresso, macchiato, latte, cappuccino
+  string Source = 2;  // source to use, db || other
+}
+
+// Response message for a Coffee requests
+message CoffeeResponse {
   string Price = 1; // response string with the price
 }
 
-// Espresso request via Coffee service
-message EspressoRequest {
-  string Name = 1;    // name to use
-  string Source = 2;  // source to use, local string || DB data
-}
-
-// Response message for a macchiato requests
-message MacchiatoResponse {
-  string Price = 1; // response string with the price
-}
-
-// Macchiato request via Coffee service
-message MacchiatoRequest {
-  string Name = 1; // name to use
-  string Source = 2;  // source to use, local string || DB data
-}
 
 service CoffeeService {
-  rpc Espresso (EspressoRequest) returns (EspressoResponse);
-  rpc Macchiato (MacchiatoRequest) returns (MacchiatoResponse);
+  rpc Coffee (CoffeeRequest) returns (CoffeeResponse);
 }
 
