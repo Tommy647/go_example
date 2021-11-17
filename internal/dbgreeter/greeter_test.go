@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGreeter_HelloGreet(t *testing.T) {
+func TestGreet_Greet(t *testing.T) {
 	// expectedQuery in our tests - note this is a regex not a string
 	var expectedQuery = `^` + strings.ReplaceAll(query, "$", `\$`) + `$`
 
@@ -100,4 +100,21 @@ func TestGreeter_HelloGreet(t *testing.T) {
 	}
 	// ensure all the mocks we defined have been called
 	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestGreet_CoffeeGreet(t *testing.T) {
+	cases := []struct {
+		name string
+	}{
+		{name: "Happy Path"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := (&Greet{}).CoffeeGreet(context.Background(), "")
+			expect := "Free Coffee served from strings\n"
+			if got != expect {
+				t.Fail()
+			}
+		})
+	}
 }

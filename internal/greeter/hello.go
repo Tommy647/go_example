@@ -32,7 +32,5 @@ func (Greet) Greet(_ context.Context, in string) string {
 
 // CoffeeGreet implements the string response when no DB is used
 func (Greet) CoffeeGreet(_ context.Context, _ string) string {
-	return fmt.Sprintln("Free Coffee served from strings")
+	return fmt.Sprint("Free Coffee served from strings")
 }
-
-

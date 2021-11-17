@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_HelloGreet(t *testing.T) {
+func TestGreet_Greet(t *testing.T) {
 	cases := []struct {
 		name   string
 		in     string
@@ -38,6 +38,26 @@ func Test_HelloGreet(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := Greet{}.Greet(context.Background(), tc.in)
+			assert.Equal(t, tc.expect, got)
+		})
+	}
+}
+
+func TestGreet_CoffeeGreet(t *testing.T) {
+	cases := []struct {
+		name   string
+		in     string
+		expect string
+	}{
+		{
+			name:   "should return a free Coffee",
+			in:     "",
+			expect: "Free Coffee served from strings",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := Greet{}.CoffeeGreet(context.Background(), tc.in)
 			assert.Equal(t, tc.expect, got)
 		})
 	}

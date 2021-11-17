@@ -7,15 +7,6 @@ import (
 	"strings"
 )
 
-/*const (
-	// environment variable names
-	envGreeter = `GREETER`     // which greeter to use
-	dbHost     = `DB_HOST`     // database host
-	dbPort     = `DB_PORT`     // database port
-	dbUser     = `DB_USER`     // database user
-	dbPassword = `DB_PASSWORD` // database password
-	dbDbname   = `DB_DBNAME`   // database name
-)*/
 
 // ensure our client implements the interface - this breaks compilation if it fails
 var _ go_example.HelloServiceServer = &HelloServer{}

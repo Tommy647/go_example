@@ -4,10 +4,7 @@ package dbgreeter
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
-	"os"
-	"strconv"
 
 	"github.com/Tommy647/go_example/internal/greeter"
 )
@@ -16,16 +13,6 @@ const (
 	// query to get a name replacement
 	query       = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
 	queryCoffee = `SELECT "price" FROM "public"."coffee" WHERE "type" = $1 LIMIT 1`
-)
-
-const (
-	// environment variable names
-	envGreeter = `GREETER`     // which greeter to use
-	dbHost     = `DB_HOST`     // database host
-	dbPort     = `DB_PORT`     // database port
-	dbUser     = `DB_USER`     // database user
-	dbPassword = `DB_PASSWORD` // database password
-	dbDbname   = `DB_DBNAME`   // database name
 )
 
 // Greet our database greeter
@@ -78,10 +65,10 @@ func (g *Greet) Greet(ctx context.Context, in string) string {
 // if that kind of coffee exists, otherwise an error message is returned
 func (g *Greet) CoffeeGreet(ctx context.Context, in string) string {
 
-/*	db, err := sql.Open("postgres", getPostgresConnection())
-	if err != nil {
-		panic("database" + err.Error())
-	}*/
+	/*	db, err := sql.Open("postgres", getPostgresConnection())
+		if err != nil {
+			panic("database" + err.Error())
+		}*/
 
 	rows, err := g.db.QueryContext(ctx, queryCoffee, in)
 	if err != nil {
@@ -112,22 +99,4 @@ func (g *Greet) CoffeeGreet(ctx context.Context, in string) string {
 
 	// use our original greeter out handle the final string
 	return out
-}
-
-// getPostgresConnection string we need to open the connection
-// gets connection details from the environment for now @todo: replace with viper
-func getPostgresConnection() string {
-	host := os.Getenv(dbHost)
-	port, err := strconv.Atoi(os.Getenv(dbPort))
-	if err != nil {
-		panic("port must be a number " + err.Error())
-	}
-	user := os.Getenv(dbUser)
-	password := os.Getenv(dbPassword)
-	dbname := os.Getenv(dbDbname)
-
-	return fmt.Sprintf(
-		`host=%s port=%d user=%s password=%s dbname=%s sslmode=disable`,
-		host, port, user, password, dbname,
-	)
 }
