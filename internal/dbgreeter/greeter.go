@@ -65,11 +65,6 @@ func (g *Greet) Greet(ctx context.Context, in string) string {
 // if that kind of coffee exists, otherwise an error message is returned
 func (g *Greet) CoffeeGreet(ctx context.Context, in string) string {
 
-	/*	db, err := sql.Open("postgres", getPostgresConnection())
-		if err != nil {
-			panic("database" + err.Error())
-		}*/
-
 	rows, err := g.db.QueryContext(ctx, queryCoffee, in)
 	if err != nil {
 		// log out the error and continue with the default behaviour
