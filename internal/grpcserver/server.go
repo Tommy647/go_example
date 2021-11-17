@@ -42,8 +42,8 @@ func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequ
 	default: // intentionally blank
 	}
 	if strings.EqualFold(request.Source, "db") &&
-		(strings.ToLower(request.Type) == "espresso" || strings.ToLower(request.Type) == "macchiato"){
-			return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx, strings.ToLower(request.Type))}, nil
+		(strings.EqualFold(request.Type, "espresso") || strings.EqualFold(request.Type, "macchiato")){
+			return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx, strings.Title(strings.ToLower(request.Type)))}, nil
 	}
 		return &go_example.CoffeeResponse{Price: greeter.New().CoffeeGreet(ctx, "")}, nil
 }

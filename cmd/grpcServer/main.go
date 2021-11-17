@@ -60,6 +60,9 @@ func main() {
 
 	// Open another DB connection
 	dbConn, err := sql.Open("postgres", getPostgresConnection())
+	if err != nil {
+		log.Println("error opening the DB", err.Error())
+	}
 
 	var coffeer grpcserver.CoffeeProvider = dbgreeter.New(dbConn)
 
