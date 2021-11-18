@@ -1,17 +1,22 @@
 ## Build and start the stack in docker
 docker/start: go/generate docker/build _docker/run database/migration/init certs/kube_ca_cert vault/populate
 
-_docker/run:
+_docker/run: docker/build
 	@echo Starting containers
-	@docker compose -f go_example-stack.yml up -d --build
+	@-docker stack deploy -c go_example-stack.yml go_example #> /dev/null 2>&1
+	@echo waiting
+	docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
+	@echo waited
 
 ## Stop all the docker containers
 docker/stop:
-	@-docker compose down
+	@-docker stack rm go_example
 
 ## Tail the docker logs
 docker/logs:
-	@docker compose logs -f -t
+	@echo Not currently able to get all logs when running in \"docker stack\" mode
+	@echo Run \"docker service logs -f\" and pass a service name, where the service names are:
+	@docker service ls | grep -v ID | awk '{ print "\t"$$2 }'
 
 ## Build the project docker images
 docker/build:
