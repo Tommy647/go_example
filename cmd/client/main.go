@@ -3,40 +3,57 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/oauth"
 
 	"github.com/Tommy647/go_example/internal/grpcclient"
+	"github.com/Tommy647/go_example/internal/tls"
 )
 
-// defaultRunTimeout for context
-const defaultRunTimeout = 10 * time.Second
+const (
+	// defaultRunTimeout for context
+	defaultRunTimeout = 10 * time.Second
+	envPort           = `PORT`         // envPort to make requests to
+	address           = `127.0.0.1:%s` // address we expect gRPC services
+)
 
 func main() {
 	log.Println("client starting") // prove the client is up
 	// create a new context that expires in 10 seconds
 	ctx, cancel := context.WithTimeout(context.Background(), defaultRunTimeout)
-
 	// close the context when we leave this function
 	defer cancel()
 
 	// convert our jwt token to a gRPC compatible format
-	jwt, err := oauth.NewJWTAccessFromKey([]byte("I'm a JWT!"))
+	jwt, err := oauth.NewJWTAccessFromKey([]byte("I'm a JWT!")) // @todo: this
 	if err != nil {
 		panic("token error " + err.Error())
 	}
+	_ = jwt
+	tlsConf, err := tls.LoadCertificates()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	opts := []grpc.DialOption{
-		grpc.WithPerRPCCredentials(jwt),
-		grpc.WithInsecure(), // just for development
+		//grpc.WithPerRPCCredentials(jwt),
+		grpc.WithTransportCredentials(credentials.NewTLS(tlsConf)),
+	}
+
+	port := os.Getenv(envPort)
+	if port == "" {
+		panic("need the PORT env var")
 	}
 
 	// create a new instance of our client application
 	c, err := grpcclient.New(
-		grpcclient.WithHost("localhost:9090"), // @todo: env var/parameter
+		grpcclient.WithHost(fmt.Sprintf(address, port)),
 		grpcclient.WithDialOptions(opts...),
 	)
 	if err != nil {

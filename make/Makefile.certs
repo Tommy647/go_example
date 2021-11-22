@@ -25,4 +25,15 @@ certs/service.pem: certs/service.csr certs/ca.cert certs/ca.key
 	@echo Creating $@
 	@openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf -extensions v3_req > /dev/null 2>&1
 
+_certs/clean:
+	@echo $@
+	@-rm *.pb.go \
+	certs/ca.* \
+	certs/*.key \
+	certs/*.cert \
+	certs/*.csr \
+	certs/*.pem \
+	certs/*.srl \
+	2> /dev/null ||:
+
 .PHONY: certs/view

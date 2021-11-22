@@ -1,5 +1,5 @@
 ## Create generated files
-go/generate: clean
+go/generate: _go/clean
 	@echo $@
 	@protoc --proto_path=. \
 		--go_out=.  \
@@ -26,4 +26,8 @@ _go/requirements:
 	@-which protoc-gen-go |&>/dev/null || echo protoc-gen-go missing:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	@-which protoc-gen-go-grpc &>/dev/null || echo protoc-gen-go-grpc missing:  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-.PHONY: test lint generate
+_go/clean:
+	@echo $@
+	@-rm *.pb.go 2> /dev/null ||:
+
+.PHONY: go/test go/lint _go/clean _go/requirements
