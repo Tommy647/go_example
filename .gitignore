@@ -20,4 +20,4 @@ vendor/
 /certs/*.csr
 /certs/*.pem
 /certs/*.srl
-/secrets/kube_ca_cert
+/secrets/service_account_token

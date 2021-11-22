@@ -8,6 +8,7 @@ certs/view: certs/service.pem
 certs/ca.key:
 	@echo Creating $@
 	@openssl genrsa -out certs/ca.key 4096 > /dev/null 2>&1
+
 certs/ca.cert: certs/ca.key
 	@echo Creating $@
 	@openssl req -new -x509 -key certs/ca.key -sha256 -subj "/C=GB/ST=WY/O=T647, Inc." -days 365 -out certs/ca.cert > /dev/null 2>&1
@@ -18,28 +19,10 @@ certs/service.key:
 
 certs/service.csr: certs/service.key
 	@echo Creating $@
-	@openssl req -new -batch -key certs/service.key -out certs/service.csr -config certs/certificate.conf > /dev/null 2>&1
+	@openssl req -new -batch -key certs/service.key -out certs/service.csr -config certs/certificate.conf -extensions v3_req > /dev/null 2>&1
 
 certs/service.pem: certs/service.csr certs/ca.cert certs/ca.key
 	@echo Creating $@
-	@openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf > /dev/null 2>&1
-
-# #
-certs/kube_ca_cert: vault/add_k8s_auth k8s/service_account
-	@echo Creating $@
-	$(eval TOKEN_REVIEWER:=$(shell kubectl get secrets | grep 'vault-reviewer-token' | awk '{ print $$1 }' ) )
-	$(eval TOKEN_REVIEW_JWT:=$(shell kubectl get secret $(TOKEN_REVIEWER) --output='go-template={{ .data.token }}' | base64 --decode))
-	$(eval KUBE_HOST=$(shell kubectl config view --raw --minify --flatten --output='jsonpath={.clusters[].cluster.server}'))
-	@kubectl config view --raw --minify --flatten --output='jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode > certs/kube_ca_cert
-	@$(ROOT_VAULT_CMD) write auth/kubernetes/config \
-		token_reviewer_jwt=$(TOKEN_REVIEW_JWT) \
-	  	kubernetes_host=$(KUBE_HOST) \
-	  	kubernetes_ca_cert=@certs/kube_ca_cert \
-	  	issuer="kubernetes/serviceaccount" > /dev/null
-	@$(ROOT_VAULT_CMD) write auth/kubernetes/role/dev-role-k8s \
-		policies="dev-policy" \
-		bound_service_account_names="my-app" \
-		bound_service_account_namespaces="default" > /dev/null
-
+	@openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf -extensions v3_req > /dev/null 2>&1
 
 .PHONY: certs/view

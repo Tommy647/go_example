@@ -20,17 +20,18 @@ services:
       - jwt
     environment:
       GREETER: db
+      PORT: 9090
+      CERTIFICATE: /certs/service.pem
+      KEY: /certs/service.key
       DB_HOST: db # docker compose so the container image from above will resolve via dns
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: example
       DB_DBNAME: postgres
-      SERVICE_ACCOUNT: /etc/vault/kube_ca_cert
-      VAULT_ADDR: vault:8200
-    volumes:
-    - "./secrets:/etc/vault"
     ports:
     - "9090:9090"
+    volumes:
+      - ./certs:/certs
     healthcheck:
       test: [ "CMD", "nc", "-zvw10", "localhost", "9090" ]
       interval: 1s
@@ -70,3 +71,7 @@ services:
       interval: 1s
       timeout: 5s
       retries: 5
+networks:
+  minikube:
+    external: true
+    name: minikube

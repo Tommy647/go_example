@@ -1,5 +1,6 @@
 ## Create generated files
 go/generate: clean
+	@echo $@
 	@protoc --proto_path=. \
 		--go_out=.  \
 		--go-grpc_out=require_unimplemented_servers=false:. \
@@ -9,10 +10,12 @@ go/generate: clean
 
 ## Run the go tests, uncached and with coverage
 go/test:
+	@echo $@
 	@-go test ./... --cover -count=1
 
 ## Lint the go codebase
 go/lint:
+	@echo $@
 	@golangci-lint run --config=.golangci.yaml ./...
 
 # # Go specific requirements

@@ -1,12 +1,10 @@
 ## Build and start the stack in docker
-docker/start: go/generate docker/build _docker/run database/migration/init certs/kube_ca_cert vault/populate
+docker/start: _docker/run database/migration/init  vault/populate
 
-_docker/run: docker/build
+_docker/run: docker/build certs
 	@echo Starting containers
-	@-docker stack deploy -c go_example-stack.yml go_example #> /dev/null 2>&1
-	@echo waiting
-	docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
-	@echo waited
+	@docker stack deploy -c go_example-stack.yml go_example > /dev/null 2>&1
+	@-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
 
 ## Stop all the docker containers
 docker/stop:
@@ -19,7 +17,7 @@ docker/logs:
 	@docker service ls | grep -v ID | awk '{ print "\t"$$2 }'
 
 ## Build the project docker images
-docker/build:
+docker/build: go/generate
 	@echo "Building images"
 	@-docker build --quiet --tag grpcserver --target grpcserver . >/dev/null
 	@-docker build --quiet --tag httpserver --target httpserver . >/dev/null

@@ -1,13 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"strings"
 
-	vault "github.com/hashicorp/vault/api"
+	"google.golang.org/grpc/credentials"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -20,21 +22,41 @@ import (
 
 const (
 	// environment variable names
-	envGreeter = `GREETER` // which greeter to use
+	envGreeter         = `GREETER` // which greeter to use
+	envPort            = `PORT`    // port to listen on
+	envCertificatePath = `CERTIFICATE`
+	envKeyPath         = `KEY`
 )
 
 func main() {
-	// connect to vault?
-	_, _ = getSecretCert()
+	address := "0.0.0.0" // need to listen on all interfaces for docker
+	port := os.Getenv(envPort)
 
 	// create a tcp listener for your gRPC service
-	listener, err := net.Listen("tcp", "0.0.0.0:9090") //nolint:gosec // development use only
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%s", address, port))
 	if err != nil {
 		panic(err.Error())
 	}
 
 	// define any server options we want to apply
-	var opts []grpc.ServerOption
+	var opts = []grpc.ServerOption{}
+
+	certificatePath := os.Getenv(envCertificatePath)
+	keyPath := os.Getenv(envKeyPath)
+	if certificatePath != "" && keyPath != "" {
+		serverCert, err := tls.LoadX509KeyPair(certificatePath, keyPath)
+		if err != nil {
+			log.Print("reading certificates", err.Error())
+		}
+
+		config := &tls.Config{
+			Certificates: []tls.Certificate{serverCert},
+			ClientAuth:   tls.NoClientCert,
+			MinVersion:   tls.VersionTLS13,
+		}
+		opts = append(opts, grpc.Creds(credentials.NewTLS(config)))
+	}
+
 	// create a new gRPC server
 	gRPCServer := grpc.NewServer(opts...)
 	// @todo: this grpcServer.GracefulStop()
@@ -54,56 +76,7 @@ func main() {
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far
-	log.Print("starting grpcServer")
+	log.Print("starting grpcServer on ", port)
 	// serve the grpc server on the tcp listener - this blocks until told to close
 	log.Fatal(gRPCServer.Serve(listener))
-}
-
-func getSecretCert() (string, error) {
-	config := vault.DefaultConfig()
-
-	client, err := vault.NewClient(config)
-	if err != nil {
-		return "", err
-	}
-
-	jwt, err := os.ReadFile(os.Getenv("SERVICE_ACCOUNT"))
-	if err != nil {
-		return "", err
-	}
-	params := map[string]interface{}{
-		"jwt":  string(jwt),
-		"role": "dev-role-k8s", // the name of the role in Vault that was created with this app's Kubernetes service account bound to it
-	}
-
-	// log in to Vault's Kubernetes auth method
-	resp, err := client.Logical().Write("auth/kubernetes/login", params)
-	if err != nil {
-		return "", fmt.Errorf("unable to log in with Kubernetes auth: %w", err)
-	}
-	if resp == nil || resp.Auth == nil || resp.Auth.ClientToken == "" {
-		return "", fmt.Errorf("login response did not return client token")
-	}
-	// now you will use the resulting Vault token for making all future calls to Vault
-	client.SetToken(resp.Auth.ClientToken)
-
-	// get secret from Vault
-	secret, err := client.Logical().Read("kv-v2/data/creds")
-	if err != nil {
-		return "", fmt.Errorf("unable to read secret: %w", err)
-	}
-
-	data, ok := secret.Data["data"].(map[string]interface{})
-	if !ok {
-		return "", fmt.Errorf("data type assertion failed: %T %#v", secret.Data["data"], secret.Data["data"])
-	}
-
-	// data map can contain more than one key-value pair, in this case we're just grabbing one of them
-	key := "password"
-	value, ok := data[key].(string)
-	if !ok {
-		return "", fmt.Errorf("value type assertion failed: %T %#v", data[key], data[key])
-	}
-
-	return value, nil
 }

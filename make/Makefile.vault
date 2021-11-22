@@ -5,8 +5,6 @@ ROOT_TOKEN ?= 12345678
 VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(VAULT_TOKEN) vault
 ROOT_VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(ROOT_TOKEN) vault
 
-MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-
 ## get the web address for our vault instance
 vault/ui:
 	@echo $(VAULT_ADDR)
@@ -29,20 +27,12 @@ vault/list:
 vault/key/add:
 	$(VAULT_CMD) kv put secret/go_example $(KEY)=${VALUE}
 
-vault/test:
-	$(MAKE) -s -f $(MKFILE_PATH) vault/key/add KEY="tommy" VALUE="Smith"
-
 ## upload self-signed certificates to vault
-vault/populate: certs vault/add_k8s_auth
+vault/populate: certs
 	@echo Populating Vault with our certificates
 	@$(ROOT_VAULT_CMD) kv put secret/certificates "updated_at"="`date`" > /dev/null # need the key to exist
 	@for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f} > /dev/null ; done
 
-vault/add_k8s_auth:
-	@echo adding k8s auth for vault
-	@-curl --silent --insecure --header "X-Vault-Token:$(ROOT_TOKEN)" --request POST --data '{"type":"kubernetes","description":"kubernetes auth"}' $(VAULT_ADDR)/v1/sys/auth/kubernetes 2>&1 > /dev/null
-
-# # Check the vault specific requirements
 # # Check the vault specific requirements
 _vault/requirements:
-	@-which vault &>/dev/null || echo valut missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install
+	@-which vault &>/dev/null || echo vault missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install
