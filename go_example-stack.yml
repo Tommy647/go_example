@@ -1,35 +1,23 @@
 version: "3.9"
 services:
-  db:
-    image: postgres
-    environment:
-      PGUSER: postgres
-      POSTGRES_PASSWORD: example
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready"]
-      interval: 1s
-      timeout: 5s
-      retries: 5
   grpc:
     image: grpcserver
     depends_on:
-      - db
-      - vault
       - jwt
     environment:
       GREETER: db
       PORT: 9090
-      CERTIFICATE: /certs/service.pem
-      KEY: /certs/service.key
-      DB_HOST: db # docker compose so the container image from above will resolve via dns
+      DB_HOST: go_example_support_db # docker swarm so the container will resolve via dns
       DB_PORT: 5432
       DB_USER: postgres
       DB_PASSWORD: example
       DB_DBNAME: postgres
+      VAULT_ADDR: "http://go_example_support_vault:8200"
+      VAULT_TOKEN: "${VAULT_TOKEN}"
     ports:
     - "9090:9090"
+    networks:
+    - go_example
     volumes:
       - ./certs:/certs
     healthcheck:
@@ -41,37 +29,25 @@ services:
     image: httpserver
     ports:
       - "8080:8080"
+    networks:
+      - go_example
     healthcheck:
       test: [ "CMD", "nc", "-zvw10", "localhost", "8080" ]
       interval: 1s
       timeout: 5s
       retries: 5
-  vault:
-    image: vault
-    cap_add:
-    - IPC_LOCK
-    environment:
-      VAULT_DEV_ROOT_TOKEN_ID: 12345678
-      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
-    ports:
-    - "8200:8200"
-    healthcheck:
-      test: [ "CMD", "nc", "-zvw10", "localhost", "8200" ]
-      interval: 1s
-      timeout: 5s
-      retries: 5
   jwt:
     image: jwtserver
-    depends_on:
-      - vault
     ports:
     - "8081:8081"
+    networks:
+      - go_example
     healthcheck:
       test: [ "CMD", "nc", "-zvw10", "localhost", "8081" ]
       interval: 1s
       timeout: 5s
       retries: 5
 networks:
-  minikube:
+  go_example:
     external: true
-    name: minikube
+    name: go_example

@@ -16,8 +16,8 @@ vault/env:
 
 ## create a new token
 vault/token:
-	$(eval TOKEN:=$(shell $(ROOT_VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
-	@echo $(TOKEN)
+	$(eval VAULT_TOKEN:=$(shell $(ROOT_VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
+	@echo $(VAULT_TOKEN)
 
 ## list all our secrets
 vault/list:

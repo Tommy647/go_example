@@ -10,9 +10,10 @@ env:
 	@echo export VAULT_ADDR=http://127.0.0.1:8200
 	@echo export CERTIFICATE=./certs/service.pem
 	@echo export KEY=./certs/service.key
+	@echo export VAULT_TOKEN=$$(${MAKE} -s vault/token)
+
 ## remove generated files
 clean: _go/clean _certs/clean
 	@echo $@
-
 
 .PHONY: clean

@@ -1,14 +1,27 @@
 ## Build and start the stack in docker
-docker/start: _docker/run database/migration/init  vault/populate
+docker/start: _docker/run database/migration/init
 
-_docker/run: docker/build certs
-	@echo Starting containers
-	@docker stack deploy -c go_example-stack.yml go_example > /dev/null 2>&1
-	@-docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
+# # run our application stack, need vault and db to be up and running first
+_docker/run: docker/build  _docker/support_stack
+	VAULT_TOKEN=$$(${MAKE} -s vault/token) docker stack deploy -c go_example-stack.yml go_example > /dev/null 2>&1
+	@docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
+
+# # create a docker network so our stacks can talk to each other
+_docker/network:
+	@echo creating docker network
+	@-docker network create -d overlay go_example > /dev/null 2>&1
+
+# # support applications in a separate stack to our application
+_docker/support_stack: _docker/network certs
+	@echo Starting support containers
+	@docker stack deploy -c support-stack.yml go_example_support > /dev/null 2>&1
+	@docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example_support
+	@${MAKE} vault/populate
 
 ## Stop all the docker containers
 docker/stop:
-	@-docker stack rm go_example
+	@-docker stack rm go_example go_example_support
+	@-docker network rm go_example
 
 ## Tail the docker logs
 docker/logs:
