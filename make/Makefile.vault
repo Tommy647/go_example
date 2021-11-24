@@ -31,7 +31,7 @@ vault/key/add:
 vault/populate: certs
 	@echo Populating Vault with our certificates
 	@$(ROOT_VAULT_CMD) kv put secret/certificates "updated_at"="`date`" > /dev/null # need the key to exist
-	@for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f} > /dev/null ; done
+	@for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f} > /dev/null ; done # #todo: we can do this with one blob of json
 
 # # Check the vault specific requirements
 _vault/requirements:

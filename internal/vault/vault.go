@@ -9,8 +9,13 @@ import (
 )
 
 const (
-	envToken = `VAULT_TOKEN` // vault auth token
-	envVault = `VAULT_ADDR`  // vault address
+	// envToken vault token
+	envToken = `VAULT_TOKEN`
+	// envVault address
+	envVault = `VAULT_ADDR`
+
+	// dataKey map key we should find vault data on
+	dataKey = `data`
 )
 
 // GetSecrets under the key secrets from the store
@@ -26,14 +31,20 @@ func GetSecrets(store, secret string) (map[string]string, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading vault secret: %s/data/%s", store, secret)
 	}
-	// @todo: check data exists first or we panic
-	dataMap, ok := data.Data["data"].(map[string]interface{})
+
+	dataMap, ok := data.Data[dataKey]
 	if !ok {
-		return nil, errors.New("unexpected datatype")
+		return nil, errors.New("no data")
 	}
+
+	d, ok := dataMap.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("unexpected data type")
+	}
+
 	dataString := make(map[string]string)
-	for k, _ := range dataMap {
-		if val, ok := dataMap[k].(string); ok {
+	for k := range d {
+		if val, ok := d[k].(string); ok {
 			dataString[k] = val
 		}
 	}

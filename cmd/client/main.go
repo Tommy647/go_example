@@ -42,7 +42,7 @@ func main() {
 	}
 
 	opts := []grpc.DialOption{
-		//grpc.WithPerRPCCredentials(jwt),
+		// grpc.WithPerRPCCredentials(jwt),
 		grpc.WithTransportCredentials(credentials.NewTLS(tlsConf)),
 	}
 

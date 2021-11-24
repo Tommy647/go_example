@@ -16,4 +16,3 @@ vendor/
 
 /*.pb.go
 /certs
-secret.txt

@@ -16,7 +16,9 @@ _docker/support_stack: _docker/network certs
 	@echo Starting support containers
 	@docker stack deploy -c support-stack.yml go_example_support > /dev/null 2>&1
 	@docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example_support
-	@${MAKE} vault/populate
+	@${MAKE} -s vault/populate
+	@sleep 30 # kibana is show and docker health checks are buggy :/
+	@curl -X POST "http://0.0.0.0:5601/api/saved_objects/index-pattern/logstash" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d'{"attributes": {"title": "logstash-*","timeFieldName": "@timestamp"}}' > /dev/null 2>&1
 
 ## Stop all the docker containers
 docker/stop:
