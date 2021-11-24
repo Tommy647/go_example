@@ -11,6 +11,10 @@ const (
 	defaultGreeting = `World`
 	// greetingMessage as a formatting string
 	helloGreetingMessage = `Hello, %s!`
+	// freeCoffee message as a formatting string
+	defaultCoffee = `How can we help?`
+	// freeCoffee message as a formatting string
+	freeCoffee = `Free %s served from strings`
 )
 
 // Greet with strings
@@ -31,6 +35,10 @@ func (Greet) Greet(_ context.Context, in string) string {
 }
 
 // CoffeeGreet implements the string response when no DB is used
-func (Greet) CoffeeGreet(_ context.Context, _ string) string {
-	return fmt.Sprint("Free Coffee served from strings")
+func (Greet) CoffeeGreet(_ context.Context, in string) string {
+	drink := defaultCoffee
+	if in != "" {
+		return fmt.Sprintf(freeCoffee, in)
+	}
+	return fmt.Sprint(drink)
 }

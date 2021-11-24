@@ -50,9 +50,14 @@ func TestGreet_CoffeeGreet(t *testing.T) {
 		expect string
 	}{
 		{
-			name:   "should return a free Coffee",
+			name:   "should return a free Latte",
+			in:     "latte",
+			expect: "Free latte served from strings",
+		},
+		{
+			name:   "should return How can we help?",
 			in:     "",
-			expect: "Free Coffee served from strings",
+			expect: "How can we help?",
 		},
 	}
 	for _, tc := range cases {
