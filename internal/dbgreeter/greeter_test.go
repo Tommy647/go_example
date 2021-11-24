@@ -8,12 +8,14 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/Tommy647/go_example/internal/logger"
 )
 
 func TestGreeter_HelloGreet(t *testing.T) {
 	// expectedQuery in our tests - note this is a regex not a string
 	var expectedQuery = `^` + strings.ReplaceAll(query, "$", `\$`) + `$`
-
+	assert.NoError(t, logger.New())
 	tests := []struct {
 		name   string
 		in     string

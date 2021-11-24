@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"strings"
 
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
@@ -16,6 +17,7 @@ import (
 	"github.com/Tommy647/go_example/internal/dbgreeter"
 	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
+	"github.com/Tommy647/go_example/internal/logger"
 	"github.com/Tommy647/go_example/internal/tls"
 )
 
@@ -39,6 +41,12 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
+	// get the zap structured logger
+	if err := logger.New(); err != nil {
+		panic(err.Error())
+	}
+	defer logger.Close()
+	logger.Debug(context.Background(), "application logger started")
 
 	// define any server options we want to apply
 	var opts = []grpc.ServerOption(nil)
@@ -61,19 +69,24 @@ func main() {
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far
-	log.Print("starting grpcServer on ", port)
+	logger.Info(context.Background(), "starting grpcServer", zap.String("port", port))
+
 	// serve the grpc server on the tcp listener - this blocks until told to close
-	log.Fatal(gRPCServer.Serve(listener))
+	if err := gRPCServer.Serve(listener); err != nil {
+		logger.Fatal(context.Background(), "grpc service failed", zap.Error(err))
+	}
 }
 
 // getGreeter decide which greeter service to use
 func getGreeter() grpcserver.GreetProvider {
 	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
+		logger.Info(context.Background(), "using database greeter")
 		db, err := _db.NewConnection()
 		if err != nil {
 			panic("database" + err.Error())
 		}
 		return dbgreeter.New(db)
 	}
+	logger.Info(context.Background(), "using string greeter")
 	return _greeter.New()
 }

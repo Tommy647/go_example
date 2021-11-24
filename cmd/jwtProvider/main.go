@@ -27,7 +27,7 @@ func main() {
 		log.Println("waiting for os syscall")
 		// block waiting for a signal on c (os.Syscall)
 		oscall := <-c
-		// log just for observability
+		// logger just for observability
 		log.Printf("system call: %s", oscall.String())
 		// cancel the context created above, which will cascade to other routines using this context
 		cancel()

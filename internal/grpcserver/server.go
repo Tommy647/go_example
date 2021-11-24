@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Tommy647/go_example"
+	"github.com/Tommy647/go_example/internal/logger"
 )
 
 // ensure our client implements the interface - this breaks compilation if it fails
@@ -29,6 +30,7 @@ func New(g GreetProvider) *HelloServer {
 
 // Hello responds to the Hello gRPC call
 func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest) (*go_example.HelloResponse, error) {
+	logger.Info(ctx, "call to Hello") //, zap.String("name", request.Name))
 	// ensure our context is still valid
 	select {
 	case <-ctx.Done():
