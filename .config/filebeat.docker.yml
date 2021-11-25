@@ -3,26 +3,11 @@ filebeat.config:
     path: ${path.config}/modules.d/*.yml
     reload.enabled: false
 
-filebeat.inputs:
-  - type: docker
-    enabled: true
-    containers:
-      path: "/var/lib/docker/containers"
-      stream: all # can be all, stdout or stderr
-      ids:
-        - '*'
-
 filebeat.autodiscover:
   providers:
     - type: docker
-      templates:
-        - condition:
-            contains:
-              container.labels.com_docker_stack_namespace: go_example
-      hints.enabled: false
-
-processors:
-  - add_docker_metadata: ~
+      hints.enabled: true
+      hints.default_config.enabled: false
 
 output.logstash:
     hosts: ["logstash:5044"]

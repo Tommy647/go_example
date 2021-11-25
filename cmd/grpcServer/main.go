@@ -42,7 +42,7 @@ func main() {
 		panic(err.Error())
 	}
 	// get the zap structured logger
-	if err := logger.New(); err != nil {
+	if err = logger.New(`go_example_grpc`); err != nil {
 		panic(err.Error())
 	}
 	defer logger.Close()

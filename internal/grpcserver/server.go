@@ -30,7 +30,7 @@ func New(g GreetProvider) *HelloServer {
 
 // Hello responds to the Hello gRPC call
 func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest) (*go_example.HelloResponse, error) {
-	logger.Info(ctx, "call to Hello") //, zap.String("name", request.Name))
+	logger.Info(ctx, "call to Hello") // , zap.String("name", request.Name))
 	// ensure our context is still valid
 	select {
 	case <-ctx.Done():

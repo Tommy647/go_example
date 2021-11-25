@@ -4,6 +4,7 @@ import "net/http"
 
 // Default middleware to apply to every call
 var Default = []func(handler http.Handler) http.Handler{
+	WithTrace,
 	WithBasicTelemetry,
 }
 

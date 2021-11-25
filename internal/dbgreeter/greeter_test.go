@@ -15,7 +15,7 @@ import (
 func TestGreeter_HelloGreet(t *testing.T) {
 	// expectedQuery in our tests - note this is a regex not a string
 	var expectedQuery = `^` + strings.ReplaceAll(query, "$", `\$`) + `$`
-	assert.NoError(t, logger.New())
+	assert.NoError(t, logger.New(`testing`))
 	tests := []struct {
 		name   string
 		in     string

@@ -15,7 +15,7 @@ import (
 
 func TestHelloWorldServer_HelloWorld(t *testing.T) {
 	var expectDefault = &grpc.HelloResponse{Response: "Hello, World!"}
-	assert.NoError(t, logger.New())
+	assert.NoError(t, logger.New(`testing`))
 	tests := []struct {
 		name       string
 		ctxTimeout time.Duration

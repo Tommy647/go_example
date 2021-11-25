@@ -8,8 +8,8 @@ import (
 	_jwt "github.com/golang-jwt/jwt/v4"
 )
 
-// CTXUser to namespace our user on the context
-const CTXUser ctxUserKey = `user`
+// ctxUser to namespace our user on the context
+const ctxUser ctxUserKey = `user`
 
 // ErrInvalidToken for authorisation
 var ErrInvalidToken = errors.New("invalid token provided")
