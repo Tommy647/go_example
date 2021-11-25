@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Tommy647/go_example/internal/logger"
+
 	"github.com/Tommy647/go_example/internal/httpserver"
 	"github.com/Tommy647/go_example/internal/middleware"
 )
@@ -18,6 +20,7 @@ const shutdownWait = 5 * time.Second
 
 // set up a simple webserver
 func main() {
+	logger.New()
 	// monitor system calls to detect a shut-down (SYSTERM||SYSINT)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)

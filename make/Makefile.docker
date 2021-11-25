@@ -1,9 +1,12 @@
 ## Build and start the stack in docker
-docker/start: _docker/run database/migration/init
+docker/start:  _docker/support_stack _docker/run database/migration/init
+
+## rebuild and restart our applications, not the support stack
+docker/restart: _docker/run
 
 # # run our application stack, need vault and db to be up and running first
-_docker/run: docker/build  _docker/support_stack
-	VAULT_TOKEN=$$(${MAKE} -s vault/token) docker stack deploy -c go_example-stack.yml go_example > /dev/null 2>&1
+_docker/run: docker/build
+	VAULT_TOKEN=$$(${MAKE} -s vault/token) docker stack deploy -c go_example-stack.yml go_example
 	@docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
 
 # # create a docker network so our stacks can talk to each other

@@ -15,7 +15,11 @@ filebeat.inputs:
 filebeat.autodiscover:
   providers:
     - type: docker
-      hints.enabled: true
+      templates:
+        - condition:
+            contains:
+              container.labels.com_docker_stack_namespace: go_example
+      hints.enabled: false
 
 processors:
   - add_docker_metadata: ~

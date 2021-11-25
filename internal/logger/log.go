@@ -14,6 +14,8 @@ var l *zap.Logger
 // so subsequent calls will return the same logger
 func New() error {
 	// @todo: get logger level from env and implement
+	// @todo: fix call stack depth
+	// @todo: add some default fields
 	if l == nil {
 		logger, err := zap.NewProduction(
 			zap.WithCaller(true),
