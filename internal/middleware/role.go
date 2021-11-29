@@ -3,7 +3,6 @@ package middleware
 import (
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/Tommy647/go_example/internal/jwt"
 )
@@ -13,18 +12,24 @@ func WithRole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("checking for the user role")
 		u := jwt.GetUser(r.Context())
-		if findRole(u.Roles, "barista") {
-			next.ServeHTTP(w, r)
+
+		if u.Roles[2] != "barista" {
+			w.WriteHeader(http.StatusNotFound)
+			_, _ = w.Write([]byte("appropriate role required"))
+			return
 		}
+		next.ServeHTTP(w, r)
 	})
 }
 
-// findRole will return true if the provided []string contains a string == to the second argument
-func findRole(in []string, v string) bool {
-	for i := range in {
-		if strings.EqualFold(in[i], v) {
+/*
+// containRole will return true if the provided []string contains a string == to the second argument
+func containRole(in []string, v string) bool {
+	for _, n := range in {
+
+		if !strings.EqualFold(n, v) {
 			return true
 		}
 	}
 	return false
-}
+}*/
