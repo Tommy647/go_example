@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -13,8 +16,18 @@ import (
 	"github.com/Tommy647/go_example/internal/middleware"
 )
 
-// shutdownWait duration when attempting a graceful shutdown
-const shutdownWait = 5 * time.Second
+const (
+	// shutdownWait duration when attempting a graceful shutdown
+	shutdownWait = 5 * time.Second
+
+	// environment variable names
+	envGreeter = `GREETER`     // which greeter to use
+	dbHost     = `DB_HOST`     // database host
+	dbPort     = `DB_PORT`     // database port
+	dbUser     = `DB_USER`     // database user
+	dbPassword = `DB_PASSWORD` // database password
+	dbDbname   = `DB_DBNAME`   // database name
+)
 
 // set up a simple webserver
 func main() {
@@ -34,18 +47,28 @@ func main() {
 		cancel()
 	}()
 
+	// Open another DB connection
+	dbConn, err := sql.Open("postgres", getPostgresConnection())
+	if err != nil {
+		log.Println("error opening the DB", err.Error())
+	}
+
 	// start the http server
-	if err := serve(ctx); err != nil {
+	if err := serve(ctx, dbConn); err != nil {
 		log.Println(err.Error())
 	}
 }
 
-func serve(ctx context.Context) error {
+func serve(ctx context.Context, db *sql.DB) error {
 	mux := http.NewServeMux()
 	// attach the handler - this pattern works well for simple apps
 	mux.Handle(
 		"/hello",
 		middleware.WithDefault(httpserver.HandleHello(), true),
+	)
+
+	mux.Handle("/coffee",
+		middleware.WithDefault(httpserver.HandleCoffee(db), true),
 	)
 
 	srv := &http.Server{
@@ -70,4 +93,22 @@ func serve(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+// getPostgresConnection string we need to open the connection
+// gets connection details from the environment for now @todo: replace with viper
+func getPostgresConnection() string {
+	host := os.Getenv(dbHost)
+	port, err := strconv.Atoi(os.Getenv(dbPort))
+	if err != nil {
+		panic("port must be a number " + err.Error())
+	}
+	user := os.Getenv(dbUser)
+	password := os.Getenv(dbPassword)
+	dbname := os.Getenv(dbDbname)
+
+	return fmt.Sprintf(
+		`host=%s port=%d user=%s password=%s dbname=%s sslmode=disable`,
+		host, port, user, password, dbname,
+	)
 }
