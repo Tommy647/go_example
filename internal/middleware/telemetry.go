@@ -14,7 +14,9 @@ func WithBasicTelemetry(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		logger.Info(r.Context(), "tracking request timings")
-		next.ServeHTTP(w, r)
+
+		next.ServeHTTP(w, r) // Calls next handler (Auth -> HandleHello)
+
 		logger.Info(
 			r.Context(),
 			"call completed",

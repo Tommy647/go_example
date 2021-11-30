@@ -26,3 +26,17 @@ func WithDefault(next http.Handler, secure ...bool) http.Handler {
 	}
 	return next
 }
+
+/*
+	1. next = httpserver.HandleHello()
+	2. next = WithAuth(httpserver.HandleHello)
+	3. next = WithBasicTelemetry(WithAuth(httpserver.HandleHello))
+
+	request ->
+		WithBasicTelemetry(
+			WithAuth(
+				httpserver.HandleHello()
+			)
+		)
+
+*/

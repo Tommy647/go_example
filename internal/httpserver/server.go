@@ -69,7 +69,7 @@ func HandleHello() http.Handler {
 			Response: make([]string, 2, len(c.Roles)), //nolint:gomnd // not a magic number
 		}
 
-		resp.Response[0] = g.Greet(r.Context(), c.Foo)
+		resp.Response[0] = g.Greet(r.Context(), c.UserName)
 		resp.Response[1] = g.Greet(r.Context(), c.Subject)
 		// perform custom greetings based on the user calling this request (data from the jwt)
 		for i := range c.Roles {

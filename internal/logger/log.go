@@ -19,7 +19,10 @@ var (
 	applicationName string
 )
 
+// loggerNotInitialised message
 const loggerNotInitialised = `logger not initialised`
+
+// wrapperStackOffset so we log the line calling our wrapper, make debugging issues easier
 const wrapperStackOffset = 2 // I <3 magic numbers :/
 
 // New instance of the logger, runs as a singleton

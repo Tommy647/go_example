@@ -4,16 +4,17 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/credentials/oauth"
 
 	"github.com/Tommy647/go_example/internal/grpcclient"
+	"github.com/Tommy647/go_example/internal/interceptor"
+	"github.com/Tommy647/go_example/internal/logger"
 	"github.com/Tommy647/go_example/internal/tls"
+	"github.com/Tommy647/go_example/internal/trace"
 )
 
 const (
@@ -24,26 +25,25 @@ const (
 )
 
 func main() {
-	log.Println("client starting") // prove the client is up
 	// create a new context that expires in 10 seconds
 	ctx, cancel := context.WithTimeout(context.Background(), defaultRunTimeout)
 	// close the context when we leave this function
 	defer cancel()
-
-	// convert our jwt token to a gRPC compatible format
-	jwt, err := oauth.NewJWTAccessFromKey([]byte("I'm a JWT!")) // @todo: this
-	if err != nil {
-		panic("token error " + err.Error())
+	ctx = trace.WithTraceID(ctx, `system`)
+	if err := logger.New(`go_example_http`); err != nil {
+		panic(err.Error())
 	}
-	_ = jwt
+	logger.Info(ctx, "client starting") // prove the client is up
+
 	tlsConf, err := tls.LoadCertificates()
 	if err != nil {
 		panic(err.Error())
 	}
 
 	opts := []grpc.DialOption{
-		// grpc.WithPerRPCCredentials(jwt),
 		grpc.WithTransportCredentials(credentials.NewTLS(tlsConf)),
+		grpc.WithUnaryInterceptor(interceptor.AttachAuth()),
+		grpc.WithUnaryInterceptor(interceptor.AttachTrace()),
 	}
 
 	port := os.Getenv(envPort)

@@ -20,6 +20,9 @@ const shutdownWait = 5 * time.Second
 
 // set up a simple webserver to generate a token
 func main() {
+	if err := logger.New(`jwt`); err != nil {
+		panic(err.Error())
+	}
 	// monitor system calls to detect a shut-down (SYSTERM||SYSINT)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)

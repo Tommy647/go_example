@@ -17,7 +17,7 @@ func WithTrace(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		traceID := r.Header.Get(traceHeader)
 		if traceID == "" { // if it is blank, create a new uuid
-			traceID = uuid.New().String()
+			traceID = uuid.NewString()
 		}
 		// attach to the ctx to make it available everywhere else
 		ctx := trace.WithTraceID(r.Context(), traceID)

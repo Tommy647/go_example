@@ -17,6 +17,7 @@ import (
 	"github.com/Tommy647/go_example/internal/dbgreeter"
 	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
+	"github.com/Tommy647/go_example/internal/interceptor"
 	"github.com/Tommy647/go_example/internal/logger"
 	"github.com/Tommy647/go_example/internal/tls"
 )
@@ -49,7 +50,12 @@ func main() {
 	logger.Debug(context.Background(), "application logger started")
 
 	// define any server options we want to apply
-	var opts = []grpc.ServerOption(nil)
+	var opts = []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(
+			interceptor.WithTrace(),
+			interceptor.WithAuth(),
+		),
+	}
 
 	tlsConfig, err := tls.GetCertificates()
 	if err != nil {
