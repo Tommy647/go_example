@@ -46,6 +46,6 @@ func HandleCoffee(dbConn *sql.DB) http.Handler {
 			_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), "")))
 			return
 		}
-		_, _ = w.Write([]byte(gDB.CoffeeGreet(r.Context(), "espresso")))
+		_, _ = w.Write([]byte(gDB.CoffeeGreet(r.Context(), "Espresso")))
 	})
 }

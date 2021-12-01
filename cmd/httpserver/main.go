@@ -14,6 +14,7 @@ import (
 
 	"github.com/Tommy647/go_example/internal/httpserver"
 	"github.com/Tommy647/go_example/internal/middleware"
+	_ "github.com/lib/pq"
 )
 
 const (
