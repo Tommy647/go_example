@@ -29,7 +29,7 @@ type (
 func New() CustomClaims {
 	return CustomClaims{
 		Username: "gus",
-		Roles:    []string{"operator", "admin", "barista"},
+		Roles:    []string{"operator", "admin", "db", "barista"},
 		RegisteredClaims: _jwt.RegisteredClaims{
 			Issuer:    "test",
 			Subject:   "somebody",
