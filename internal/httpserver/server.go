@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Tommy647/go_example/internal/dbgreeter"
 
@@ -40,12 +41,20 @@ func HandleCoffee(dbConn *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("coffee http request")
 		u := jwt.GetUser(r.Context())
-
-		if !u.DB {
+		if !(findRole(u, "barista") && findRole(u, "db")) {
 			g := greeter.New()
 			_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), "")))
 			return
 		}
 		_, _ = w.Write([]byte(gDB.CoffeeGreet(r.Context(), "Espresso")))
 	})
+}
+
+func findRole(u *jwt.CustomClaims, role string) bool {
+	for _, v := range u.Roles {
+		if strings.EqualFold(v, role) {
+			return true
+		}
+	}
+	return false
 }

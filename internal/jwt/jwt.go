@@ -21,7 +21,6 @@ type (
 	CustomClaims struct {
 		Username string   `json:"username"`
 		Roles    []string `json:"roles"`
-		DB       bool     `json:"db"`
 		_jwt.RegisteredClaims
 	}
 )
@@ -31,7 +30,6 @@ func New() CustomClaims {
 	return CustomClaims{
 		Username: "gus",
 		Roles:    []string{"operator", "admin", "barista"},
-		DB:       true,
 		RegisteredClaims: _jwt.RegisteredClaims{
 			Issuer:    "test",
 			Subject:   "somebody",

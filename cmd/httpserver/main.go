@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		log.Println("error opening the DB", err.Error())
 	}
-
+	defer dbConn.Close()
 	// start the http server
 	if err := serve(ctx, dbConn); err != nil {
 		log.Println(err.Error())

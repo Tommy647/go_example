@@ -5,12 +5,12 @@ import "net/http"
 // Default middleware to apply to every call
 var Default = []func(handler http.Handler) http.Handler{
 	WithBasicTelemetry,
-	WithRole,
 }
 
 // Secure middle ware for authorised endpoints
 var Secure = []func(handler http.Handler) http.Handler{
 	WithAuth,
+	WithRole,
 }
 
 // WithDefault wrap requests in middle ware, secure first, then default
