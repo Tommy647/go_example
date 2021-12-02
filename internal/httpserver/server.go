@@ -41,7 +41,7 @@ func HandleCoffee(dbConn *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("coffee http request")
 		u := jwt.GetUser(r.Context())
-		if !(findRole(u, "barista") && findRole(u, "db")) {
+		if !findRole(u, "barista") {
 			g := greeter.New()
 			_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), "")))
 			return
