@@ -64,7 +64,6 @@ func (g *Greet) Greet(ctx context.Context, in string) string {
 // CoffeeGreet provides our coffee request, looks for `in` in the DB and gets the price
 // if that kind of coffee exists, otherwise a message is returned
 func (g *Greet) CoffeeGreet(ctx context.Context, in string) string {
-
 	rows, err := g.db.QueryContext(ctx, queryCoffee, in)
 	if err != nil {
 		// log out the error and continue with the default behaviour

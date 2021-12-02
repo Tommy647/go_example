@@ -31,12 +31,19 @@ services:
     ports:
     - "8088:8088"
     healthcheck:
-      test:  nc -zvw10 grpc 9090
+      test:  nc -zvw10 localhost 8088
       interval: 1s
       timeout: 5s
       retries: 5
   http:
     image: httpserver
+    environment:
+      GREETER: db
+      DB_HOST: db # docker compose so the container image from above will resolve via dns
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: example
+      DB_DBNAME: postgres
     ports:
       - "8080:8080"
     healthcheck:
