@@ -32,7 +32,7 @@ const (
 
 // set up a simple webserver
 func main() {
-	// monitor system calls to detect a shut-down (SYSTERM||SYSINT)
+	// monitor system calls to detect a shut-down (SIGTERM||SIGINT)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
 

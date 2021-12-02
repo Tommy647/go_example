@@ -120,7 +120,7 @@ func TestGreet_CoffeeGreet(t *testing.T) {
 		{
 			name:   "should return a free coffee from a string when coffee is not in DB",
 			in:     "latte",
-			expect: "Free Coffee served from strings"},
+			expect: "Free latte served from strings"},
 	}
 
 	// create a mock database for our unit tests, we are doing this outside of our for loop to
