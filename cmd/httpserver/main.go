@@ -22,7 +22,6 @@ const (
 	shutdownWait = 5 * time.Second
 
 	// environment variable names
-	envGreeter = `GREETER`     // which greeter to use
 	dbHost     = `DB_HOST`     // database host
 	dbPort     = `DB_PORT`     // database port
 	dbUser     = `DB_USER`     // database user
@@ -53,7 +52,13 @@ func main() {
 	if err != nil {
 		log.Println("error opening the DB", err.Error())
 	}
-	defer dbConn.Close()
+	defer func(dbConn *sql.DB) {
+		err := dbConn.Close()
+		if err != nil {
+
+		}
+	}(dbConn)
+
 	// start the http server
 	if err := serve(ctx, dbConn); err != nil {
 		log.Println(err.Error())
