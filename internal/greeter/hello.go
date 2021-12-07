@@ -11,6 +11,10 @@ const (
 	defaultGreeting = `World`
 	// helloGreetingMessage as a formatting string
 	helloGreetingMessage = `Hello, %s!`
+	// defaultCoffee is used when no kind of coffee is specified in the request
+	defaultCoffee = `How can we help?`
+	// freeCoffee is used when the specified coffee has no entry in the DB
+	freeCoffee = `Free %s served from strings`
 )
 
 // New instance of a string greeter
@@ -28,4 +32,13 @@ func (BasicGreeter) Greet(_ context.Context, in string) string {
 		greeting = in
 	}
 	return fmt.Sprintf(helloGreetingMessage, greeting)
+}
+
+// CoffeeGreet implements the basic response from strings when no DB is requested
+func (BasicGreeter) CoffeeGreet(_ context.Context, in string) string {
+	drink := defaultCoffee
+	if in != "" {
+		return fmt.Sprintf(freeCoffee, in)
+	}
+	return fmt.Sprintf(drink)
 }

@@ -1,0 +1,2 @@
+CREATE INDEX idx_from_coffee
+    ON public.coffee ("type");

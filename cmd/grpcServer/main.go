@@ -71,7 +71,7 @@ func main() {
 	// @todo: this grpcServer.GracefulStop()
 
 	// 'register' our gRPC service with the newly created gRPC server
-	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(getGreeter()))
+	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.NewHS(getGreeter()))
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far

@@ -1,0 +1,2 @@
+
+DROP INDEX  public.idx_from_coffee;

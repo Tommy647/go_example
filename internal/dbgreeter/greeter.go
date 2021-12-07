@@ -11,8 +11,13 @@ import (
 	"github.com/Tommy647/go_example/internal/logger"
 )
 
-// query to get a name replacement
-const query = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
+const (
+	// query to get a name replacement
+	query = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
+
+	// query to get the price of the requested coffee
+	queryCoffee = `SELECT "price" FROM "public"."coffee" WHERE "type" = $1 LIMIT 1`
+)
 
 // New returns a new instance of our database greeter
 func New(db *sql.DB) *DBGreeter {
@@ -62,4 +67,33 @@ func (g *DBGreeter) Greet(ctx context.Context, in string) string {
 
 	// use our original greeter to handle the final string
 	return basicGreeter.Greet(ctx, to)
+}
+
+func (g *DBGreeter) CoffeeGreet(ctx context.Context, in string) string {
+	logger.Info(ctx, "database coffeeGreet called", zap.String("in", in))
+	// We grab a new instance of a BasicGreeter
+	basicGreeter := greeter.New()
+	rows, err := g.db.QueryContext(ctx, queryCoffee, in)
+	if err != nil {
+		logger.Error(ctx, "coffeeGreet query", zap.Error(err))
+		return basicGreeter.CoffeeGreet(ctx, in)
+	}
+	// placeholder for value from DB
+	out := `initial value`
+	for rows.Next() {
+		if err := rows.Scan(&out); err != nil {
+			logger.Error(ctx, "coffeeGreet scan", zap.Error(err))
+			if err = rows.Close(); err != nil {
+				logger.Error(ctx, "greet row close", zap.Error(err))
+			}
+			return basicGreeter.CoffeeGreet(ctx, in)
+		}
+	}
+	// no need to rows.Close if rows.Next returned false, just check for errors
+	if err := rows.Err(); err != nil {
+		logger.Error(ctx, "coffeeGreet row", zap.Error(err))
+		return basicGreeter.CoffeeGreet(ctx, in)
+	}
+
+	return out
 }
