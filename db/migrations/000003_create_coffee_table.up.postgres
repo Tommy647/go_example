@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.coffee (
-                                             "id" serial NOT NULL PRIMARY KEY,
-                                             "type" TEXT,
-                                             "price" INT
+    "id" serial NOT NULL PRIMARY KEY,
+    "type" TEXT,
+    "price" INT
 );
 
 INSERT INTO public.coffee ("type", "price") VALUES
