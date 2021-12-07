@@ -15,3 +15,19 @@ service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
 }
+
+// Coffee request via Coffee service
+message CoffeeRequest {
+  string Type = 1;    // type of coffee to serve: espresso, macchiato, latte, cappuccino
+  string Source = 2;  // source to use, db || other
+}
+
+// Response message for a Coffee requests
+message CoffeeResponse {
+  string Price = 1; // response string with the price
+}
+
+
+service CoffeeService {
+  rpc Coffee (CoffeeRequest) returns (CoffeeResponse);
+}
