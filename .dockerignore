@@ -1,5 +1,13 @@
-Dockerfile.*
+Dockerfile
 .dockerignore
-docker-compose.yaml
+.gitignore
+go_example-stack.yml
+support-stack.yml
+postman_collection.json
+postman_environment.json
 Makefile
+/certs
+/db
 /make
+README.md
+secret.txt

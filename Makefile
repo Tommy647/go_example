@@ -4,15 +4,11 @@ default: help
 
 ## check requirements are installed, offers link to install page if missing
 requirements:
-	@-which go || echo go missing
-	@-which golangci-lint || echo golangci-lint missing: https://golangci-lint.run/usage/install/
-	@-which protoc || echo protoc missing: https://grpc.io/docs/protoc-installation/
-	@-which protoc-gen-go || echo protoc-gen-go missing:  go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@-which protoc-gen-go-grpc || echo protoc-gen-go-grpc missing:  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	@-which docker || echo docker missing:
-	@-docker compose stop || echo docker compose missing: https://github.com/docker/compose/tree/v2
-	@-which vault || echo valut missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install
-	@-which migrate|| echo migrate missing: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1
+	@$(MAKE) -s -f make/Makefile.golang _go/requirements
+	@$(MAKE) -s -f make/Makefile.docker _docker/requirements
+	@$(MAKE) -s -f make/Makefile.vault _vault/requirements
+	@$(MAKE) -s -f make/Makefile.database _database/requirements
+	@$(MAKE) -s -f make/Makefile.k8s _k8s/requirements
 
 ## run all targets, as a quick smoke test
 all: clean go/generate go/lint go/test docker/start docker/stop

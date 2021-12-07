@@ -1,6 +1,19 @@
 ## open gRPC-UI a web based gRPC explorer
 grpcui:
-	@grpcui -plaintext localhost:9090
+	@grpcui -cacert ./certs/ca.cert  -cert ./certs/service.pem -key ./certs/service.key 127.0.0.1:9090
+
+## provides default environment variables, run "eval $(make env)" to add them to your sessions automatically
+env:
+	@echo export PORT=9090
+	@echo export CA_CERTIFICATE=./certs/ca.cert
+	@echo export GREETER=;
+	@echo export VAULT_ADDR=http://127.0.0.1:8200
+	@echo export CERTIFICATE=./certs/service.pem
+	@echo export KEY=./certs/service.key
+	@echo export VAULT_TOKEN=$$(${MAKE} -s vault/token)
+
 ## remove generated files
-clean:
-	@-rm *.pb.go 2> /dev/null ||:
+clean: _go/clean _certs/clean
+	@echo $@
+
+.PHONY: clean

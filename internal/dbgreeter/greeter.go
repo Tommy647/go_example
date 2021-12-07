@@ -4,9 +4,11 @@ package dbgreeter
 import (
 	"context"
 	"database/sql"
-	"log"
+
+	"go.uber.org/zap"
 
 	"github.com/Tommy647/go_example/internal/greeter"
+	"github.com/Tommy647/go_example/internal/logger"
 )
 
 // query to get a name replacement
@@ -27,12 +29,13 @@ type DBGreeter struct {
 // Greet provides our hello request, checks the DB to see
 // if `in` exists, and replaces with the DB.from
 func (g *DBGreeter) Greet(ctx context.Context, in string) string {
+	logger.Info(ctx, "database greet called", zap.String("in", in))
 	// create an instance of our basic greeter to reuse
 	basicGreeter := greeter.New()
 	rows, err := g.db.QueryContext(ctx, query, in)
 	if err != nil {
-		// log out the error and continue with the default behaviour
-		log.Println("query error", err.Error())
+		// logger out the error and continue with the default behaviour
+		logger.Error(ctx, "greet query", zap.Error(err))
 		return basicGreeter.Greet(ctx, in)
 	}
 
@@ -42,10 +45,10 @@ func (g *DBGreeter) Greet(ctx context.Context, in string) string {
 	for rows.Next() {
 		// scan the data from our row into our placeholder
 		if err := rows.Scan(&to); err != nil {
-			log.Println("scan error", err.Error())
+			logger.Error(ctx, "greet scan", zap.Error(err))
 			// if rows.Scan errors, we need to close
 			if err := rows.Close(); err != nil {
-				log.Println("row close error", err.Error())
+				logger.Error(ctx, "greet row close", zap.Error(err))
 			}
 			return basicGreeter.Greet(ctx, in)
 		}
@@ -53,7 +56,7 @@ func (g *DBGreeter) Greet(ctx context.Context, in string) string {
 
 	// no need to rows.Close if rows.Next returned false, just check for errors
 	if err := rows.Err(); err != nil {
-		log.Println("row error", err.Error())
+		logger.Error(ctx, "greet row", zap.Error(err))
 		return basicGreeter.Greet(ctx, in)
 	}
 
