@@ -3,6 +3,7 @@ package dbgreeter
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGreeter_HelloGreet(t *testing.T) {
+func TestGreet_Greet(t *testing.T) {
 	// expectedQuery in our tests - note this is a regex not a string
 	var expectedQuery = `^` + strings.ReplaceAll(query, "$", `\$`) + `$`
 
@@ -90,7 +91,7 @@ func TestGreeter_HelloGreet(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := &DBGreeter{
+			g := &Greet{
 				db: db,
 			}
 
@@ -100,4 +101,61 @@ func TestGreeter_HelloGreet(t *testing.T) {
 	}
 	// ensure all the mocks we defined have been called
 	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestGreet_CoffeeGreet(t *testing.T) {
+	tests := []struct {
+		name   string
+		in     string
+		expect string
+	}{
+		{
+			name:   "should return the price from the mocked DB for an espresso",
+			in:     "espresso",
+			expect: "160"},
+		{
+			name:   "should return the price from the mocked DB for a macchiato",
+			in:     "macchiato",
+			expect: "180"},
+		{
+			name:   "should return a free coffee from a string when coffee is not in DB",
+			in:     "latte",
+			expect: "Free latte served from strings"},
+	}
+
+	// create a mock database for our unit tests, we are doing this outside of our for loop to
+	// share among all our test cases
+	// db: is a mocked out DB instance
+	// mock: allows us to create expectations and returns
+	// err: if anything went wrong
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err.Error()) // stop the tests
+	}
+
+	columns := []string{"price"}
+
+	// Expects a query with the input "espresso" and returns the price 160
+	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "type" = \$1 LIMIT 1`).
+		WithArgs("espresso").
+		WillReturnRows(
+			sqlmock.NewRows(columns).AddRow("160"),
+		)
+
+	// Expects a query with the input "macchiato" and returns the price 180
+	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "type" = \$1 LIMIT 1`).
+		WithArgs("macchiato").
+		WillReturnRows(
+			sqlmock.NewRows(columns).AddRow("180"),
+		)
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			g := &Greet{
+				db: db,
+			}
+			got := g.CoffeeGreet(context.Background(), tc.in)
+			assert.Equal(t, tc.expect, got, fmt.Sprintf("%#v", got))
+		})
+	}
 }

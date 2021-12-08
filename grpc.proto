@@ -11,7 +11,35 @@ message HelloRequest {
   string Name = 1; // name to use
 }
 
+// ByeResponse message for Bye requests
+message WelcomeResponse {
+  string Response = 1; // response string we use
+}
+
+message WelcomeRequest {
+  string Name = 1; // name to use
+}
+
 service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
+  rpc Welcome (WelcomeRequest) returns (WelcomeResponse);
 }
+
+
+// Coffee request via Coffee service
+message CoffeeRequest {
+  string Type = 1;    // type of coffee to serve: espresso, macchiato, latte, cappuccino
+  string Source = 2;  // source to use, db || other
+}
+
+// Response message for a Coffee requests
+message CoffeeResponse {
+  string Price = 1; // response string with the price
+}
+
+
+service CoffeeService {
+  rpc Coffee (CoffeeRequest) returns (CoffeeResponse);
+}
+
