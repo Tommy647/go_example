@@ -2,9 +2,6 @@ package grpcserver
 
 import (
 	"context"
-	"strings"
-
-	"github.com/Tommy647/go_example/internal/greeter"
 
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/logger"
@@ -19,20 +16,6 @@ type GreetProvider interface {
 	Greet(context.Context, string) string
 }
 
-type CoffeeProvider interface {
-	CoffeeGreet(context.Context, string) string
-}
-
-// HelloServer provides the implementation of our gRPC service
-// has to meet the go_example.HelloServiceServer interface
-type HelloServer struct {
-	greeter GreetProvider
-}
-
-type CoffeeServer struct {
-	coffeer CoffeeProvider
-}
-
 // NewHS instance of our gRPC service
 func NewHS(g GreetProvider) *HelloServer {
 	return &HelloServer{
@@ -40,10 +23,10 @@ func NewHS(g GreetProvider) *HelloServer {
 	}
 }
 
-func NewCS(c CoffeeProvider) *CoffeeServer {
-	return &CoffeeServer{
-		coffeer: c,
-	}
+// HelloServer provides the implementation of our gRPC service
+// has to meet the go_example.HelloServiceServer interface
+type HelloServer struct {
+	greeter GreetProvider
 }
 
 // Hello responds to the Hello gRPC call
@@ -59,6 +42,20 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 	return &go_example.HelloResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
 }
 
+type CoffeeProvider interface {
+	CoffeeGreet(context.Context, string, string) string
+}
+
+type CoffeeServer struct {
+	coffeer CoffeeProvider
+}
+
+func NewCS(c CoffeeProvider) *CoffeeServer {
+	return &CoffeeServer{
+		coffeer: c,
+	}
+}
+
 func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequest) (*go_example.CoffeeResponse, error) {
 	logger.Info(ctx, "call to Coffee")
 	select {
@@ -66,11 +63,8 @@ func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequ
 		return nil, ctx.Err()
 	default: // intentionally left blank
 	}
-	// If we receive "db" in the request we check for espresso or macchiato in the Type
-	// if found we retrieve the price from the db, otherwise we provide the basic CoffeeGreeter
-	if strings.EqualFold(request.Source, "db") &&
-		(strings.EqualFold(request.Type, "espresso") || strings.EqualFold(request.Type, "macchiato")) {
-		return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx, strings.Title(strings.ToLower(request.Type)))}, nil
-	}
-	return &go_example.CoffeeResponse{Price: greeter.New().CoffeeGreet(ctx, request.Type)}, nil
+	return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx,
+			request.GetType(),
+			request.GetSource())},
+		nil
 }

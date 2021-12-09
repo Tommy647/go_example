@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS public.coffee (
 );
 
 INSERT INTO public.coffee ("type", "price") VALUES
-    ('Espresso', 160);
+    ('espresso', 160);
 INSERT INTO public.coffee ("type", "price") VALUES
-    ('Macchiato', 180);
+    ('macchiato', 180);

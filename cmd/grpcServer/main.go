@@ -72,6 +72,7 @@ func main() {
 
 	// 'register' our gRPC service with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.NewHS(getGreeter()))
+	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.NewCS(getCoffeeGreeter()))
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far
@@ -85,7 +86,7 @@ func main() {
 
 // getGreeter decide which greeter service to use
 func getGreeter() grpcserver.GreetProvider {
-	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
+	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this func ignores case
 		logger.Info(context.Background(), "using database greeter")
 		db, err := _db.NewConnection()
 		if err != nil {
@@ -95,4 +96,14 @@ func getGreeter() grpcserver.GreetProvider {
 	}
 	logger.Info(context.Background(), "using string greeter")
 	return _greeter.New()
+}
+
+func getCoffeeGreeter() grpcserver.CoffeeProvider {
+	logger.Info(context.Background(), "using database greeter")
+	db, err := _db.NewConnection()
+	if err != nil {
+		panic("database" + err.Error())
+	}
+	return dbgreeter.New(db)
+
 }
