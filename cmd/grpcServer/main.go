@@ -3,18 +3,19 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_greeter "github.com/Tommy647/go_example/internal/greeter"
-	_ "github.com/lib/pq" // special: we need to include this package here to ensure the drivers load, but we do not need the code
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"os"
 	"strconv"
 
+	_ "github.com/lib/pq" // special: we need to include this package here to ensure the drivers load, but we do not need the code
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/dbgreeter"
 	"github.com/Tommy647/go_example/internal/filegreeter"
+	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
 )
 
