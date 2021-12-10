@@ -3,24 +3,29 @@ package filegreeter
 import (
 	"bufio"
 	"context"
-	"github.com/Tommy647/go_example/internal/greeter"
 	"io"
-	"log"
 	"os"
+
+	"github.com/Tommy647/go_example/internal/greeter"
 )
 
 // New returns a new instance of our file greeter
-func New(path string) *FileGreeter {
+func New(path string) (*FileGreeter, error) {
 	file, err := os.Open(path)
-	defer file.Close()
 	if err != nil {
-		panic("Error opening file" + err.Error())
+		return nil, err
 	}
-	content := readFile(file)
+	defer file.Close()
+
+	content, err := readFile(file)
+	if err != nil {
+		return nil, err
+	}
+
 	return &FileGreeter{
 		file:    file,
 		content: content,
-	}
+	}, nil
 
 }
 
@@ -31,7 +36,7 @@ type FileGreeter struct {
 }
 
 // readFile returns lines in a slice from and io.Reader
-func readFile(reader io.Reader) []string {
+func readFile(reader io.Reader) ([]string, error) {
 	var lines []string
 	scanner := bufio.NewScanner(reader)
 
@@ -41,18 +46,17 @@ func readFile(reader io.Reader) []string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	return lines
+	return lines, nil
 }
 
 // Greet provides our hello request, checks the file to see
 // if `in` exists, if so, uses it in the greeting, otherwise sets empty string
 func (g *FileGreeter) Greet(ctx context.Context, in string) string {
 	basicGreeter := greeter.New()
-	fileContent := g.content
 
-	for _, v := range fileContent {
+	for _, v := range g.content {
 		if v == in {
 			return basicGreeter.Greet(ctx, v)
 		}

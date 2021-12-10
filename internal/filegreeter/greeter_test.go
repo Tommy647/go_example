@@ -9,7 +9,7 @@ import (
 func TestFileGreeter_Greet(t *testing.T) {
 	var buffer bytes.Buffer
 	buffer.WriteString("jimmy")
-	content := readFile(&buffer)
+	content, _ := readFile(&buffer)
 	tests := []struct {
 		name   string
 		in     string

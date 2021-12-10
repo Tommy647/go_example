@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"strings"
 
 	_ "github.com/lib/pq" // special: we need to include this package here to ensure the drivers load, but we do not need the code
 	"google.golang.org/grpc"
@@ -44,7 +45,7 @@ func main() {
 
 	// decide which function to run
 	var greeter grpcserver.GreetProvider
-	switch os.Getenv(envGreeter) {
+	switch strings.ToLower(os.Getenv(envGreeter)) {
 	case "db":
 		log.Print("database selected")
 		db, err := sql.Open("postgres", getPostgresConnection())
@@ -54,7 +55,10 @@ func main() {
 		greeter = dbgreeter.New(db)
 	case "file":
 		log.Print("file selected")
-		greeter = filegreeter.New("/greetingfile.txt")
+		greeter, err = filegreeter.New("/greetingfile.txt")
+		if err != nil {
+			panic("file" + err.Error())
+		}
 	default:
 		greeter = _greeter.New()
 	}
