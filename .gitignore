@@ -15,6 +15,3 @@
 vendor/
 
 /*.pb.go
-
-# IDE files
-.idea/
