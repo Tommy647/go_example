@@ -91,13 +91,13 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string, source string)
 				}
 				return basicGreeter.CoffeeGreet(ctx, tipe)
 			}
+			return out // We return with the value from the DB
 		}
 		// no need to rows.Close if rows.Next returned false, just check for errors
 		if err := rows.Err(); err != nil {
 			logger.Error(ctx, "coffeeGreet row", zap.Error(err))
 			return basicGreeter.CoffeeGreet(ctx, tipe)
 		}
-		return out
 	}
 
 	return basicGreeter.CoffeeGreet(ctx, tipe)
