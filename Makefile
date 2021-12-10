@@ -15,7 +15,7 @@ requirements:
 	@-which migrate|| echo migrate missing: go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1
 
 ## run all targets, as a quick smoke test
-all: clean go/generate go/lint go/test docker/start docker/stop
+all: clean go/generate go/test docker/start docker/stop
 
 ## This help screen
 help:

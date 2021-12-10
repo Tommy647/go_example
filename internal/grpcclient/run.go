@@ -25,7 +25,6 @@ func (c Client) Run(ctx context.Context, names ...string) {
 		// create a worker to handle the requests concurrently
 		go c.requestWorker(ctx, wg, queue)
 	}
-
 	// send a request off for each name
 	if len(names) == 0 {
 		queue <- &go_example.HelloRequest{}

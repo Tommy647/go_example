@@ -3,19 +3,18 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_greeter "github.com/Tommy647/go_example/internal/greeter"
+	_ "github.com/lib/pq" // special: we need to include this package here to ensure the drivers load, but we do not need the code
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 	"os"
 	"strconv"
-	"strings"
-
-	_ "github.com/lib/pq" // special: we need to include this package here to ensure the drivers load, but we do not need the code
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/dbgreeter"
-	_greeter "github.com/Tommy647/go_example/internal/greeter"
+	"github.com/Tommy647/go_example/internal/filegreeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
 )
 
@@ -43,17 +42,25 @@ func main() {
 	// @todo: this grpcServer.GracefulStop()
 
 	// decide which function to run
-	var greeter grpcserver.GreetProvider = _greeter.New()
-	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
+	var greeter grpcserver.GreetProvider
+	switch os.Getenv(envGreeter) {
+	case "db":
+		log.Print("database selected")
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {
 			panic("database" + err.Error())
 		}
 		greeter = dbgreeter.New(db)
+	case "file":
+		log.Print("file selected")
+		greeter = filegreeter.New("/greetingfile.txt")
+	default:
+		greeter = _greeter.New()
 	}
 
 	// 'register' our gRPC service with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(greeter))
+
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far
