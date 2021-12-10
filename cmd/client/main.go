@@ -39,5 +39,5 @@ func main() {
 	// start our client running with no input
 	c.Run(ctx)
 	// reuse the client and add some names
-	c.Run(ctx, "Tom", "Orson", "Kurt")
+	c.Run(ctx, "Tom", "Orson", "Kurt", "jimmy")
 }

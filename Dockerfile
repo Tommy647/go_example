@@ -29,6 +29,8 @@ RUN go build -o grpcserver cmd/grpcServer/main.go
 FROM alpine:3.14 AS grpcserver
 # copy over the binary we built above
 COPY --from=builder /app/grpcserver .
+# copy over the greeting file
+COPY --from=builder /app/cmd/grpcServer/greetingfile.txt .
 # expose our working port
 EXPOSE 9090
 # command we run when starting the container
