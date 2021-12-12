@@ -78,7 +78,7 @@ Message: Hello, Kurt!
 				workers:     1,
 			}
 
-			c.Run(context.Background(), tc.names...)
+			c.Run("BasicGreeter", context.Background(), tc.names...)
 
 			assert.Equal(t, tc.expect, buf.String())
 			// assert all expected calls to the mServer were made

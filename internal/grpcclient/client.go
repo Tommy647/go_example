@@ -16,7 +16,7 @@ type CustomGreeter struct {
 }
 
 func (c CustomGreeter) Request(client *Client) {
-	client.Run(c.RequestOpts.Context, c.RequestOpts.Greeting, c.RequestOpts.Names)
+	client.Run("CustomGreeter", c.RequestOpts.Context, c.RequestOpts.Greeting, c.RequestOpts.Names)
 
 }
 
@@ -25,7 +25,7 @@ type BasicGreeter struct {
 }
 
 func (b BasicGreeter) Request(client *Client) {
-	client.Run(b.RequestOpts.Context, b.RequestOpts.Names)
+	client.Run("BasicGreeter", b.RequestOpts.Context, b.RequestOpts.Names)
 
 }
 
