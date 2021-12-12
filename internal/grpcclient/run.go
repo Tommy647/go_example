@@ -10,7 +10,7 @@ import (
 // Run sends a request to the grpcServer and logs the response
 func (c Client) Run(ctx context.Context, names ...string) {
 	// if we have not been initialised correctly, just exit
-	if c.client == nil {
+	if c.helloClient == nil || c.greetingClient == nil {
 		return
 	}
 	// queue to hold the inputs

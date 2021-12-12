@@ -18,7 +18,7 @@ func (c *Client) requestWorker(ctx context.Context, wg *sync.WaitGroup, queue <-
 				// channel has been closed, queue is empty, so we exit here
 				return
 			}
-			resp, err := c.client.Hello(ctx, request)
+			resp, err := c.helloClient.Hello(ctx, request)
 			if err != nil {
 				log.Println("error messaging grpcServer", err.Error())
 				continue

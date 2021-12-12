@@ -15,3 +15,17 @@ service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
 }
+
+// CustomGreeterResponse message for Hello requests
+message CustomGreeterResponse {
+  string Response = 1; // response string we use
+}
+
+message CustomGreeterRequest {
+  string Name = 1; // name to use
+}
+
+service CustomGreeterService {
+  // CustomGreeter a simple request/response example
+  rpc CustomGreeter (CustomGreeterRequest) returns (CustomGreeterResponse);
+}

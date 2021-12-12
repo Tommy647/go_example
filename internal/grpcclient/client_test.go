@@ -74,8 +74,8 @@ Message: Hello, Kurt!
 			}
 
 			c := Client{
-				client:  mServer,
-				workers: 1,
+				helloClient: mServer,
+				workers:     1,
 			}
 
 			c.Run(context.Background(), tc.names...)
