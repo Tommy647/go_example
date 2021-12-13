@@ -41,7 +41,7 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 
 // CustomGreetProvider something that greets
 type CustomGreetProvider interface {
-	Greet(context.Context, string) string
+	Greet(context.Context, string, string) string
 }
 
 // CustomGreetServer provides the implementation of our gRPC service
@@ -57,7 +57,7 @@ func NewGreeter(g CustomGreetProvider) *CustomGreetServer {
 	}
 }
 
-// Hello responds to the Hello gRPC call
+// CustomGreeter responds to the Hello gRPC call
 func (h CustomGreetServer) CustomGreeter(ctx context.Context, request *go_example.CustomGreeterRequest) (*go_example.CustomGreeterResponse, error) {
 	// ensure our context is still valid
 	select {
@@ -66,5 +66,5 @@ func (h CustomGreetServer) CustomGreeter(ctx context.Context, request *go_exampl
 	default: // intentionally blank
 	}
 
-	return &go_example.CustomGreeterResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
+	return &go_example.CustomGreeterResponse{Response: h.greeter.Greet(ctx, request.Greeting, request.Name)}, nil
 }

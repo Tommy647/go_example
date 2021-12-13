@@ -22,5 +22,5 @@ type CustomGreeter struct{}
 // Greet the name in the given string or return a default value if it is empty
 func (CustomGreeter) Greet(_ context.Context, greeting string, name string) string {
 
-	return fmt.Sprintf(greeting, name)
+	return fmt.Sprintf("%s %s", greeting, name)
 }

@@ -2,6 +2,7 @@ package grpcclient
 
 import (
 	"github.com/Tommy647/go_example"
+	"google.golang.org/protobuf/proto"
 	"sync"
 )
 
@@ -14,16 +15,19 @@ func (c Client) Run(requestType string, opts RequestOpts) {
 	// wait group, so we can wait for concurrent threads to finish
 	wg := &sync.WaitGroup{}
 	names := opts.Names
+
 	switch requestType {
 	case "BasicGreeter":
 		// queue to hold the inputs
+		var test proto.Message
+		test = &go_example.HelloRequest{}
 		queue := make(chan *go_example.HelloRequest)
 
 		// create the workers as go routines
 		for i := 0; i < c.workers; i++ {
 			wg.Add(1)
 			// create a worker to handle the requests concurrently
-			go c.requestHelloWorker(opts.Context, wg, queue)
+			go c.requestWorkerInterface(opts.Context, wg, queue)
 		}
 
 		// send a request off for each name
@@ -44,7 +48,7 @@ func (c Client) Run(requestType string, opts RequestOpts) {
 		for i := 0; i < c.workers; i++ {
 			wg.Add(1)
 			// create a worker to handle the requests concurrently
-			go c.requestCustomGreeterWorker(opts.Context, wg, queue)
+			go c.requestWorkerInterface(opts.Context, wg, queue)
 		}
 
 		// send a request off for each name

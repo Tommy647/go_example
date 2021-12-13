@@ -22,7 +22,7 @@ services:
       jwt:
         condition: service_healthy
     environment:
-      GREETER: db
+      GREETER: custom
       DB_HOST: db # docker compose so the container image from above will resolve via dns
       DB_PORT: 5432
       DB_USER: postgres

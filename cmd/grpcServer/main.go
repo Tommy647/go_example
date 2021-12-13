@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/Tommy647/go_example/internal/customgreeter"
 	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"log"
 	"net"
@@ -44,6 +45,7 @@ func main() {
 
 	// decide which function to run
 	var greeter grpcserver.GreetProvider
+	var customGreeter grpcserver.CustomGreetProvider
 	switch strings.ToLower(os.Getenv(envGreeter)) {
 	case "db":
 		log.Print("database selected")
@@ -64,8 +66,15 @@ func main() {
 	default:
 		greeter = _greeter.New()
 	}
-
-	go_example.RegisterCustomGreeterServiceServer(gRPCServer, grpcserver.NewGreeter(greeter))
+	customGreeter = customgreeter.New()
+	log.Print("registering custom service")
+	go_example.RegisterCustomGreeterServiceServer(gRPCServer, grpcserver.NewGreeter(customGreeter))
+	// enable reflection for development, allows us to see the gRPC schema
+	// @todo: How to tage advantage of this
+	reflection.Register(gRPCServer)
+	log.Print("done registering service")
+	// @todo: ask tom - does this catch errors and continue? rather that fail
+	log.Fatal(gRPCServer.Serve(listener))
 }
 
 // getPostgresConnection string we need to open the connection

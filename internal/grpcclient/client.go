@@ -74,5 +74,6 @@ func (c *Client) connect() error {
 	}
 	// create a new client on our connection
 	c.helloClient = go_example.NewHelloServiceClient(c.conn)
+	c.greetingClient = go_example.NewCustomGreeterServiceClient(c.conn)
 	return nil
 }
