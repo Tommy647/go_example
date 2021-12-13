@@ -78,7 +78,12 @@ Message: Hello, Kurt!
 				workers:     1,
 			}
 
-			c.Run("BasicGreeter", context.Background(), tc.names...)
+			ops := RequestOpts{
+				Context: context.Background(),
+				Names:   tc.names,
+			}
+
+			c.Run("BasicGreeter", ops)
 
 			assert.Equal(t, tc.expect, buf.String())
 			// assert all expected calls to the mServer were made

@@ -15,24 +15,22 @@ type CustomGreeter struct {
 	RequestOpts
 }
 
-func (c CustomGreeter) Request(client *Client) {
-	client.Run("CustomGreeter", c.RequestOpts.Context, c.RequestOpts.Greeting, c.RequestOpts.Names)
-
-}
-
 type BasicGreeter struct {
 	RequestOpts
 }
 
-func (b BasicGreeter) Request(client *Client) {
-	client.Run("BasicGreeter", b.RequestOpts.Context, b.RequestOpts.Names)
-
-}
-
 type RequestOpts struct {
 	Context  context.Context
-	Names    string
+	Names    []string
 	Greeting string
+}
+
+func (c CustomGreeter) Request(client *Client) {
+	client.Run("CustomGreeter", c.RequestOpts)
+}
+
+func (b BasicGreeter) Request(client *Client) {
+	client.Run("BasicGreeter", b.RequestOpts)
 }
 
 // Client to handle making the gRPC request to the grpcServer

@@ -23,6 +23,7 @@ message CustomGreeterResponse {
 
 message CustomGreeterRequest {
   string Name = 1; // name to use
+  string Greeting = 2; // name to use
 }
 
 service CustomGreeterService {
