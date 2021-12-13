@@ -38,3 +38,33 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 
 	return &go_example.HelloResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
 }
+
+// CustomGreetProvider something that greets
+type CustomGreetProvider interface {
+	Greet(context.Context, string) string
+}
+
+// CustomGreetServer provides the implementation of our gRPC service
+// has to meet the go_example.HelloServiceServer interface
+type CustomGreetServer struct {
+	greeter CustomGreetProvider
+}
+
+// NewGreeter instance of our gRPC service
+func NewGreeter(g CustomGreetProvider) *CustomGreetServer {
+	return &CustomGreetServer{
+		greeter: g,
+	}
+}
+
+// Hello responds to the Hello gRPC call
+func (h CustomGreetServer) CustomGreeter(ctx context.Context, request *go_example.CustomGreeterRequest) (*go_example.CustomGreeterResponse, error) {
+	// ensure our context is still valid
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default: // intentionally blank
+	}
+
+	return &go_example.CustomGreeterResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
+}

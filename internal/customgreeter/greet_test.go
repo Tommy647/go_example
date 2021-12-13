@@ -1,4 +1,4 @@
-package greeter
+package customgreeter
 
 import (
 	"context"

@@ -61,12 +61,11 @@ func main() {
 		log.Print("starting grpcServer")
 		// serve the grpc server on the tcp listener - this blocks until told to close
 		log.Fatal(gRPCServer.Serve(listener))
-	case "customgreeter":
-		greeter
-
 	default:
 		greeter = _greeter.New()
 	}
+
+	go_example.RegisterCustomGreeterServiceServer(gRPCServer, grpcserver.NewGreeter(greeter))
 }
 
 // getPostgresConnection string we need to open the connection
