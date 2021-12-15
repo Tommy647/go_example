@@ -19,9 +19,7 @@ func (c Client) Run(requestType string, opts RequestOpts) {
 	switch requestType {
 	case "BasicGreeter":
 		// queue to hold the inputs
-		var test proto.Message
-		test = &go_example.HelloRequest{}
-		queue := make(chan *go_example.HelloRequest)
+		queue := make(chan proto.Message)
 
 		// create the workers as go routines
 		for i := 0; i < c.workers; i++ {
@@ -42,7 +40,7 @@ func (c Client) Run(requestType string, opts RequestOpts) {
 		close(queue)
 	case "CustomGreeter":
 		// queue to hold the inputs
-		queue := make(chan *go_example.CustomGreeterRequest)
+		queue := make(chan proto.Message)
 
 		// create the workers as go routines
 		for i := 0; i < c.workers; i++ {
