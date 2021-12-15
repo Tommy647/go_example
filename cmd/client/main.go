@@ -36,24 +36,25 @@ func main() {
 	}
 
 	defer func() { _ = c.Close() }()
-
-	var basicRequest grpcclient.Requester
-	var customRequest grpcclient.Requester
-	basicRequest = grpcclient.BasicGreeter{
+	// Create generic request
+	var request grpcclient.Requester
+	// BasicGreeter request with options
+	request = grpcclient.BasicGreeter{
 		RequestOpts: grpcclient.RequestOpts{
 			Context: ctx,
 			Names:   []string{"Tom"},
 		},
 	}
-
-	customRequest = grpcclient.CustomGreeter{
+	// Send the BasicGreeter request
+	request.Request(c)
+	// CustomGreeter request with options
+	request = grpcclient.CustomGreeter{
 		RequestOpts: grpcclient.RequestOpts{
 			Context:  ctx,
 			Names:    []string{"Tom", "Jimmy"},
 			Greeting: "Welcome",
 		},
 	}
-
-	basicRequest.Request(c)
-	customRequest.Request(c)
+	// Send the CustomGreeter request
+	request.Request(c)
 }
