@@ -5,11 +5,14 @@ import (
 	"log"
 	"sync"
 
+	"google.golang.org/protobuf/proto"
+
 	grpc "github.com/Tommy647/go_example"
 )
 
-// requestWorker handles making requests to the grpc grpcServer
-func (c *Client) requestWorker(ctx context.Context, wg *sync.WaitGroup, queue <-chan *grpc.HelloRequest) {
+// requestWorkerInterface handles making requests to the grpc grpcServer
+// Uses generic proto.Message interface type to allow the method to be more generic
+func (c *Client) requestWorkerInterface(ctx context.Context, wg *sync.WaitGroup, queue <-chan proto.Message) {
 	defer wg.Done()
 	for { // forever!
 		select {
@@ -18,12 +21,23 @@ func (c *Client) requestWorker(ctx context.Context, wg *sync.WaitGroup, queue <-
 				// channel has been closed, queue is empty, so we exit here
 				return
 			}
-			resp, err := c.client.Hello(ctx, request)
-			if err != nil {
-				log.Println("error messaging grpcServer", err.Error())
-				continue
+			switch concrete := request.(type) {
+			case *grpc.HelloRequest:
+				resp, err := c.helloClient.Hello(ctx, concrete)
+				if err != nil {
+					log.Println("error messaging grpcServer", err.Error())
+					continue
+				}
+				log.Println("Message:", resp.GetResponse())
+			case *grpc.CustomGreeterRequest:
+				resp, err := c.greetingClient.CustomGreeter(ctx, concrete)
+				if err != nil {
+					log.Println("error messaging grpcServer", err.Error())
+					continue
+				}
+				log.Println("Message:", resp.GetResponse())
 			}
-			log.Println("Message:", resp.GetResponse())
+
 		case <-ctx.Done():
 			// we timed out
 			return

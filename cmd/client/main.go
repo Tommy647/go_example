@@ -36,8 +36,25 @@ func main() {
 	}
 
 	defer func() { _ = c.Close() }()
-	// start our client running with no input
-	c.Run(ctx)
-	// reuse the client and add some names
-	c.Run(ctx, "Tom", "Orson", "Kurt")
+	// Create generic request
+	var request grpcclient.Requester
+	// BasicGreeter request with options
+	request = grpcclient.BasicGreeter{
+		RequestOpts: grpcclient.RequestOpts{
+			Context: ctx,
+			Names:   []string{"Tom"},
+		},
+	}
+	// Send the BasicGreeter request
+	request.Request(c)
+	// CustomGreeter request with options
+	request = grpcclient.CustomGreeter{
+		RequestOpts: grpcclient.RequestOpts{
+			Context:  ctx,
+			Names:    []string{"Tom", "Jimmy"},
+			Greeting: "Welcome",
+		},
+	}
+	// Send the CustomGreeter request
+	request.Request(c)
 }

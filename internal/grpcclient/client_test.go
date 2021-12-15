@@ -74,11 +74,16 @@ Message: Hello, Kurt!
 			}
 
 			c := Client{
-				client:  mServer,
-				workers: 1,
+				helloClient: mServer,
+				workers:     1,
 			}
 
-			c.Run(context.Background(), tc.names...)
+			ops := RequestOpts{
+				Context: context.Background(),
+				Names:   tc.names,
+			}
+
+			c.Run("BasicGreeter", ops)
 
 			assert.Equal(t, tc.expect, buf.String())
 			// assert all expected calls to the mServer were made
