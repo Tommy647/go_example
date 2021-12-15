@@ -41,4 +41,30 @@ func TestBasicGreeter_Greet(t *testing.T) {
 			assert.Equal(t, tc.expect, got)
 		})
 	}
+
+}
+
+func TestBasicGreeter_CoffeeGreet(t *testing.T) {
+	cases := []struct {
+		name   string
+		in     string
+		expect string
+	}{
+		{
+			name:   "should return a free coffee if coffee requested not in db",
+			in:     "latte",
+			expect: "Free latte served from strings"},
+		{
+			name:   "should propose help when no drink has been requested",
+			in:     "",
+			expect: "How can we help?",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := BasicGreeter{}.CoffeeGreet(context.Background(), tc.in)
+			assert.Equal(t, tc.expect, got)
+		})
+
+	}
 }
