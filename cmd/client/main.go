@@ -37,27 +37,23 @@ func main() {
 
 	defer func() { _ = c.Close() }()
 
-	var request1 grpcclient.Requester
-	var request2 grpcclient.Requester
-	request1 = grpcclient.BasicGreeter{
+	var basicRequest grpcclient.Requester
+	var customRequest grpcclient.Requester
+	basicRequest = grpcclient.BasicGreeter{
 		RequestOpts: grpcclient.RequestOpts{
 			Context: ctx,
 			Names:   []string{"Tom"},
 		},
 	}
 
-	request2 = grpcclient.CustomGreeter{
+	customRequest = grpcclient.CustomGreeter{
 		RequestOpts: grpcclient.RequestOpts{
 			Context:  ctx,
-			Names:    []string{"Tom"},
+			Names:    []string{"Tom", "Jimmy"},
 			Greeting: "Welcome",
 		},
 	}
 
-	request2.Request(c)
-	request1.Request(c)
-	// start our client running with no input
-	//c.Run(ctx)
-	// reuse the client and add some names
-	//c.Run(ctx, "Tom", "Orson", "Kurt")
+	basicRequest.Request(c)
+	customRequest.Request(c)
 }
