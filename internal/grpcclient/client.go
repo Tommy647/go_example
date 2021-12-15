@@ -2,33 +2,40 @@ package grpcclient
 
 import (
 	"context"
+
 	"google.golang.org/grpc"
 
 	"github.com/Tommy647/go_example"
 )
 
+// Requester interface with single Request method
 type Requester interface {
 	Request(client *Client)
 }
 
+// CustomGreeter type with request options
 type CustomGreeter struct {
 	RequestOpts
 }
 
+// BasicGreeter type with request options
 type BasicGreeter struct {
 	RequestOpts
 }
 
+// RequestOpts type holds the details needed for eiter basic or custom greeter
 type RequestOpts struct {
 	Context  context.Context
 	Names    []string
 	Greeting string
 }
 
+// Request is a wrapper around Run that passes in the request type and request options
 func (c CustomGreeter) Request(client *Client) {
 	client.Run("CustomGreeter", c.RequestOpts)
 }
 
+// Request is a wrapper around Run that passes in the request type and request options
 func (b BasicGreeter) Request(client *Client) {
 	client.Run("BasicGreeter", b.RequestOpts)
 }
