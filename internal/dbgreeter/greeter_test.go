@@ -3,6 +3,7 @@ package dbgreeter
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -102,4 +103,56 @@ func TestGreeter_HelloGreet(t *testing.T) {
 	}
 	// ensure all the mocks we defined have been called
 	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestDBGreeter_CoffeeGreet(t *testing.T) {
+	assert.NoError(t, logger.New(`testing`))
+	tests := []struct {
+		name   string
+		in     string
+		expect string
+	}{
+		{
+			name:   "should return the price from the mocked DB for an espresso",
+			in:     "espresso",
+			expect: "160"},
+		{
+			name:   "should return the price from the mocked DB for a macchiato",
+			in:     "macchiato",
+			expect: "180"},
+	}
+
+	// create a mock database for our unit tests, we are doing this outside of our for loop to
+	// share among all our test cases
+	// db: is a mocked out DB instance
+	// mock: allows us to create expectations and returns
+	// err: if anything went wrong
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err.Error()) // stop the tests
+	}
+	columns := []string{"price"}
+
+	// Expects a query with the input "espresso" and returns the price 160
+	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "type" = \$1 LIMIT 1`).
+		WithArgs("espresso").
+		WillReturnRows(
+			sqlmock.NewRows(columns).AddRow("160"),
+		)
+
+	// Expects a query with the input "macchiato" and returns the price 180
+	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "type" = \$1 LIMIT 1`).
+		WithArgs("macchiato").
+		WillReturnRows(
+			sqlmock.NewRows(columns).AddRow("180"),
+		)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			g := &DBGreeter{
+				db: db,
+			}
+			got := g.CoffeeGreet(context.Background(), tc.in, "db")
+			assert.Equal(t, tc.expect, got, fmt.Sprintf("%#v", got))
+		})
+	}
 }
