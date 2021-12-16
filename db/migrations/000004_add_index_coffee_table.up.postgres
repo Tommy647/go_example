@@ -1,2 +1,2 @@
 CREATE INDEX idx_from_coffee
-    ON public.coffee ("type");
+    ON public.coffee ("coffee_type");

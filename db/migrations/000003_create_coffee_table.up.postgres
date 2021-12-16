@@ -1,10 +1,14 @@
 CREATE TABLE IF NOT EXISTS public.coffee (
     "id" serial NOT NULL PRIMARY KEY,
-    "type" TEXT,
+    "coffee_type" TEXT,
     "price" INT
 );
 
-INSERT INTO public.coffee ("type", "price") VALUES
+INSERT INTO public.coffee ("coffee_type", "price") VALUES
     ('espresso', 160);
-INSERT INTO public.coffee ("type", "price") VALUES
+INSERT INTO public.coffee ("coffee_type", "price") VALUES
     ('macchiato', 180);
+INSERT INTO public.coffee ("coffee_type", "price") VALUES
+    ('latte', 210);
+INSERT INTO public.coffee ("coffee_type", "price") VALUES
+    ('double espresso', 190);

@@ -105,7 +105,6 @@ func HandleCoffee() http.Handler {
 			return
 		}
 		_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), "espresso")))
-		return
 	})
 }
 
@@ -152,8 +151,10 @@ func getCoffeeGreeter(h http.Header) (CoffeeProvider, error) {
 	if strings.EqualFold(header, "DB") {
 		db, err := _db.NewConnection()
 		if err != nil {
+			log.Println("error from accessing db")
 			return nil, err
 		}
+		log.Println("trying to get a coffee from db")
 		return dbgreeter.New(db), nil
 	}
 	return greeter.New(), nil

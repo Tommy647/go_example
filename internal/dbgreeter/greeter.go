@@ -4,6 +4,7 @@ package dbgreeter
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	"go.uber.org/zap"
 
@@ -79,6 +80,7 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string) string {
 	rows, err := g.db.QueryContext(ctx, queryCoffee, tipe)
 	if err != nil { // If we found a problem with the query we return a basicGreeter
 		logger.Error(ctx, "coffeeGreet query", zap.Error(err))
+		log.Println("sorry can't get you a coffee from db")
 		return basicGreeter.CoffeeGreet(ctx, tipe)
 	}
 	// placeholder for value from DB
@@ -91,6 +93,7 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string) string {
 			}
 			return basicGreeter.CoffeeGreet(ctx, tipe)
 		}
+		log.Println("coffee found in db")
 		return out // We return with the value from the DB
 	}
 	// no need to rows.Close if rows.Next returned false, just check for errors

@@ -2,10 +2,10 @@ JWT=""
 
 ## get a new token from our jwt service
 jwt/get_token:
-	@-nc -zv localhost 8081 &> /dev/null || (echo start docker first && false)
-	$(eval JWT=$(shell curl localhost:8081))
+	@-nc -zv 127.0.0.1 8081 &> /dev/null || (echo start docker first && false)
+	$(eval JWT=$(shell curl 127.0.0.1:8081))
 	@echo $(JWT)
 
 ## make a hello request with a token
 jwt/hello: jwt/get_token
-	curl -H "Authorization: Bearer $(JWT)" localhost:8080/hello
+	curl -H "Authorization: Bearer $(JWT)" 127.0.0.1:8080/hello
