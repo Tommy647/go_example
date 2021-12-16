@@ -41,6 +41,11 @@ type GreetProvider interface {
 	Greet(context.Context, string) string
 }
 
+// CoffeeProvider something that provides a CoffeeGreet
+type CoffeeProvider interface {
+	CoffeeGreet(context.Context, string) string
+}
+
 // ErrNotAuthorised without jwt
 var ErrNotAuthorised = errors.New("not authorise: jwt required")
 
@@ -89,6 +94,21 @@ func HandleHello() http.Handler {
 	})
 }
 
+func HandleCoffee() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("coffee http request")
+
+		g, err := getCoffeeGreeter(r.Header)
+		if err != nil {
+			log.Println("database", err.Error())
+			w.WriteHeader(http.StatusBadGateway)
+			return
+		}
+		_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), "espresso")))
+		return
+	})
+}
+
 // formatResponse depending on the requested 'Accept' Header values
 func formatResponse(format string, resp HelloResponse) (*bytes.Buffer, string, error) {
 	log.Println("Accept:", format)
@@ -115,6 +135,19 @@ func formatResponse(format string, resp HelloResponse) (*bytes.Buffer, string, e
 
 // getGreeter based on a header field
 func getGreeter(h http.Header) (GreetProvider, error) {
+	header := h.Get("X-Greeter")
+	if strings.EqualFold(header, "DB") {
+		db, err := _db.NewConnection()
+		if err != nil {
+			return nil, err
+		}
+		return dbgreeter.New(db), nil
+	}
+	return greeter.New(), nil
+}
+
+// getCoffeeGreeter based on a header field
+func getCoffeeGreeter(h http.Header) (CoffeeProvider, error) {
 	header := h.Get("X-Greeter")
 	if strings.EqualFold(header, "DB") {
 		db, err := _db.NewConnection()

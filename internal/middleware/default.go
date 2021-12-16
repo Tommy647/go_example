@@ -8,12 +8,13 @@ var Default = []func(handler http.Handler) http.Handler{
 	WithBasicTelemetry,
 }
 
-// Secure middle ware for authorised endpoints
+// Secure middleware for authorised endpoints
 var Secure = []func(handler http.Handler) http.Handler{
 	WithAuth,
+	WithRole,
 }
 
-// WithDefault wrap requests in middle ware, secure first, then default
+// WithDefault wrap requests in middleware, secure first, then default
 func WithDefault(next http.Handler, secure ...bool) http.Handler {
 	if len(secure) != 0 && secure[0] {
 		for i := len(Secure) - 1; i >= 0; i-- {

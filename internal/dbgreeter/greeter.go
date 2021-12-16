@@ -4,7 +4,6 @@ package dbgreeter
 import (
 	"context"
 	"database/sql"
-	"strings"
 
 	"go.uber.org/zap"
 
@@ -70,35 +69,35 @@ func (g *DBGreeter) Greet(ctx context.Context, in string) string {
 	return basicGreeter.Greet(ctx, to)
 }
 
-func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string, source string) string {
+// CoffeeGreet takes the context and a type of coffee to serve its price if found on DB
+// or server one free otherwise
+func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string) string {
 	logger.Info(ctx, "database coffeeGreet called", zap.String("in", tipe))
 	// We grab a new instance of a BasicGreeter
 	basicGreeter := greeter.New()
 
-	if strings.EqualFold(source, "db") {
-		rows, err := g.db.QueryContext(ctx, queryCoffee, tipe)
-		if err != nil { // If we found a problem with the query we return a basicGreeter
-			logger.Error(ctx, "coffeeGreet query", zap.Error(err))
-			return basicGreeter.CoffeeGreet(ctx, tipe)
-		}
-		// placeholder for value from DB
-		out := tipe
-		for rows.Next() {
-			if err := rows.Scan(&out); err != nil {
-				logger.Error(ctx, "coffeeGreet scan", zap.Error(err))
-				if err = rows.Close(); err != nil {
-					logger.Error(ctx, "greet row close", zap.Error(err))
-				}
-				return basicGreeter.CoffeeGreet(ctx, tipe)
-			}
-			return out // We return with the value from the DB
-		}
-		// no need to rows.Close if rows.Next returned false, just check for errors
-		if err := rows.Err(); err != nil {
-			logger.Error(ctx, "coffeeGreet row", zap.Error(err))
-			return basicGreeter.CoffeeGreet(ctx, tipe)
-		}
+	rows, err := g.db.QueryContext(ctx, queryCoffee, tipe)
+	if err != nil { // If we found a problem with the query we return a basicGreeter
+		logger.Error(ctx, "coffeeGreet query", zap.Error(err))
+		return basicGreeter.CoffeeGreet(ctx, tipe)
 	}
-
+	// placeholder for value from DB
+	out := tipe
+	for rows.Next() {
+		if err := rows.Scan(&out); err != nil {
+			logger.Error(ctx, "coffeeGreet scan", zap.Error(err))
+			if err = rows.Close(); err != nil {
+				logger.Error(ctx, "greet row close", zap.Error(err))
+			}
+			return basicGreeter.CoffeeGreet(ctx, tipe)
+		}
+		return out // We return with the value from the DB
+	}
+	// no need to rows.Close if rows.Next returned false, just check for errors
+	if err := rows.Err(); err != nil {
+		logger.Error(ctx, "coffeeGreet row", zap.Error(err))
+		return basicGreeter.CoffeeGreet(ctx, tipe)
+	}
+	// We return with a basicGreeter
 	return basicGreeter.CoffeeGreet(ctx, tipe)
 }

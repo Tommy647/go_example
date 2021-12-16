@@ -151,7 +151,7 @@ func TestDBGreeter_CoffeeGreet(t *testing.T) {
 			g := &DBGreeter{
 				db: db,
 			}
-			got := g.CoffeeGreet(context.Background(), tc.in, "db")
+			got := g.CoffeeGreet(context.Background(), tc.in)
 			assert.Equal(t, tc.expect, got, fmt.Sprintf("%#v", got))
 		})
 	}

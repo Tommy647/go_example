@@ -16,8 +16,10 @@ import (
 	"github.com/Tommy647/go_example/internal/trace"
 )
 
-// shutdownWait duration when attempting a graceful shutdown
-const shutdownWait = 5 * time.Second
+const (
+	// shutdownWait duration when attempting a graceful shutdown
+	shutdownWait = 5 * time.Second
+)
 
 // set up a simple webserver
 func main() {
@@ -53,6 +55,11 @@ func serve(ctx context.Context) error {
 	mux.Handle(
 		"/hello",
 		middleware.WithDefault(httpserver.HandleHello(), true),
+	)
+
+	mux.Handle(
+		"/coffee",
+		middleware.WithDefault(httpserver.HandleCoffee(), true),
 	)
 
 	srv := &http.Server{

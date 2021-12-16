@@ -43,7 +43,7 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 }
 
 type CoffeeProvider interface {
-	CoffeeGreet(context.Context, string, string) string
+	CoffeeGreet(context.Context, string) string
 }
 
 type CoffeeServer struct {
@@ -64,7 +64,6 @@ func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequ
 	default: // intentionally left blank
 	}
 	return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx,
-			request.GetType(),
-			request.GetSource())},
+			request.GetType())},
 		nil
 }
