@@ -134,14 +134,14 @@ func TestDBGreeter_CoffeeGreet(t *testing.T) {
 	columns := []string{"price"}
 
 	// Expects a query with the input "espresso" and returns the price 160
-	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "type" = \$1 LIMIT 1`).
+	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "coffee_type" = \$1 LIMIT 1`).
 		WithArgs("espresso").
 		WillReturnRows(
 			sqlmock.NewRows(columns).AddRow("160"),
 		)
 
 	// Expects a query with the input "macchiato" and returns the price 180
-	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "type" = \$1 LIMIT 1`).
+	mock.ExpectQuery(`SELECT "price" FROM "public"\."coffee" WHERE "coffee_type" = \$1 LIMIT 1`).
 		WithArgs("macchiato").
 		WillReturnRows(
 			sqlmock.NewRows(columns).AddRow("180"),

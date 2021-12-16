@@ -17,7 +17,7 @@ const (
 	query = `SELECT "to" FROM "public"."name" WHERE "from" = $1 LIMIT 1`
 
 	// query to get the price of the requested coffee
-	queryCoffee = `SELECT "price" FROM "public"."coffee" WHERE "type" = $1 LIMIT 1`
+	queryCoffee = `SELECT "price" FROM "public"."coffee" WHERE "coffee_type" = $1 LIMIT 1`
 )
 
 // New returns a new instance of our database greeter
@@ -72,26 +72,26 @@ func (g *DBGreeter) Greet(ctx context.Context, in string) string {
 
 // CoffeeGreet takes the context and a type of coffee to serve its price if found on DB
 // or server one free otherwise
-func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string) string {
-	logger.Info(ctx, "database coffeeGreet called", zap.String("in", tipe))
+func (g *DBGreeter) CoffeeGreet(ctx context.Context, coffeeType string) string {
+	logger.Info(ctx, "database coffeeGreet called", zap.String("in", coffeeType))
 	// We grab a new instance of a BasicGreeter
 	basicGreeter := greeter.New()
 
-	rows, err := g.db.QueryContext(ctx, queryCoffee, tipe)
+	rows, err := g.db.QueryContext(ctx, queryCoffee, coffeeType)
 	if err != nil { // If we found a problem with the query we return a basicGreeter
 		logger.Error(ctx, "coffeeGreet query", zap.Error(err))
 		log.Println("sorry can't get you a coffee from db")
-		return basicGreeter.CoffeeGreet(ctx, tipe)
+		return basicGreeter.CoffeeGreet(ctx, coffeeType)
 	}
 	// placeholder for value from DB
-	out := tipe
+	out := coffeeType
 	for rows.Next() {
 		if err := rows.Scan(&out); err != nil {
 			logger.Error(ctx, "coffeeGreet scan", zap.Error(err))
 			if err = rows.Close(); err != nil {
 				logger.Error(ctx, "greet row close", zap.Error(err))
 			}
-			return basicGreeter.CoffeeGreet(ctx, tipe)
+			return basicGreeter.CoffeeGreet(ctx, coffeeType)
 		}
 		log.Println("coffee found in db")
 		return out // We return with the value from the DB
@@ -99,8 +99,8 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, tipe string) string {
 	// no need to rows.Close if rows.Next returned false, just check for errors
 	if err := rows.Err(); err != nil {
 		logger.Error(ctx, "coffeeGreet row", zap.Error(err))
-		return basicGreeter.CoffeeGreet(ctx, tipe)
+		return basicGreeter.CoffeeGreet(ctx, coffeeType)
 	}
 	// We return with a basicGreeter
-	return basicGreeter.CoffeeGreet(ctx, tipe)
+	return basicGreeter.CoffeeGreet(ctx, coffeeType)
 }
