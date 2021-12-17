@@ -1,10 +1,10 @@
 ## open gRPC-UI a web based gRPC explorer
 grpcui:
-	@grpcui -cacert ./certs/ca.cert  -cert ./certs/service.pem -key ./certs/service.key 127.0.0.1:9090
+	@grpcui -cacert ./certs/ca.cert  -cert ./certs/service.pem -key ./certs/service.key 127.0.0.1:8090
 
 ## provides default environment variables, run "eval $(make env)" to add them to your sessions automatically
 env:
-	@echo export PORT=9090
+	@echo export PORT=8090
 	@echo export CA_CERTIFICATE=./certs/ca.cert
 	@echo export GREETER=;
 	@echo export VAULT_ADDR=http://127.0.0.1:8200
