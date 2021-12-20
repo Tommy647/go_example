@@ -104,7 +104,8 @@ func HandleCoffee() http.Handler {
 			w.WriteHeader(http.StatusBadGateway)
 			return
 		}
-		_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), "espresso")))
+		query := r.URL.Query()
+		_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), query.Get("drink"))))
 	})
 }
 
