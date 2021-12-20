@@ -136,12 +136,14 @@ func formatResponse(format string, resp HelloResponse) (*bytes.Buffer, string, e
 func getGreeter(h http.Header) (GreetProvider, error) {
 	header := h.Get("X-Greeter")
 	if strings.EqualFold(header, "DB") {
+		log.Println(">>>>> testing db access")
 		db, err := _db.NewConnection()
 		if err != nil {
 			return nil, err
 		}
 		return dbgreeter.New(db), nil
 	}
+	log.Println(">>>>> testing NO db access")
 	return greeter.New(), nil
 }
 

@@ -8,6 +8,11 @@ import (
 )
 
 // ensure our client implements the interface - this breaks compilation if it fails
+// Here we guarantee that the structs on the right implements the method defined by the
+// interface on the left.
+// The left side has been implemented by the generated grpc code after compilation.
+// The right side is implemented just some lines below in this file. If we forget to implement
+// the required method to satisfy the interface on the left this var definitions will break compilation!
 var _ go_example.HelloServiceServer = &HelloServer{}
 var _ go_example.CoffeeServiceServer = &CoffeeServer{}
 
@@ -27,6 +32,7 @@ func NewHS(g GreetProvider) *HelloServer {
 // has to meet the go_example.HelloServiceServer interface
 type HelloServer struct {
 	greeter GreetProvider
+	// greeter interface {Greet( context.Context, string) string}
 }
 
 // Hello responds to the Hello gRPC call
