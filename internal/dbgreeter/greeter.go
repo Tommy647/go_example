@@ -42,6 +42,7 @@ func (g *DBGreeter) Greet(ctx context.Context, in string) string {
 	if err != nil {
 		// logger out the error and continue with the default behaviour
 		logger.Error(ctx, "greet query", zap.Error(err))
+		log.Println(">>> Failed to get the DB")
 		return basicGreeter.Greet(ctx, in)
 	}
 
