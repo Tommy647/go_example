@@ -34,7 +34,7 @@ func New() *CustomClaims {
 			Issuer:    "test",
 			Subject:   "somebody",
 			Audience:  []string{"somebody_else"},
-			ExpiresAt: _jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+			ExpiresAt: _jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			NotBefore: _jwt.NewNumericDate(time.Now()),
 			IssuedAt:  _jwt.NewNumericDate(time.Now()),
 			ID:        "1",

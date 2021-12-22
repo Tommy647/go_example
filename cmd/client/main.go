@@ -7,10 +7,13 @@ import (
 	"os"
 	"time"
 
+	"go.uber.org/zap"
+
+	"github.com/Tommy647/go_example"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
-	"github.com/Tommy647/go_example/internal/grpcclient"
 	"github.com/Tommy647/go_example/internal/interceptor"
 	"github.com/Tommy647/go_example/internal/logger"
 	"github.com/Tommy647/go_example/internal/tls"
@@ -42,8 +45,10 @@ func main() {
 
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(credentials.NewTLS(tlsConf)),
-		grpc.WithUnaryInterceptor(interceptor.AttachAuth()),
-		grpc.WithUnaryInterceptor(interceptor.AttachTrace()),
+		grpc.WithChainUnaryInterceptor(
+			interceptor.AttachAuth(),
+			interceptor.AttachTrace(),
+		),
 	}
 
 	port := os.Getenv(envPort)
@@ -51,18 +56,28 @@ func main() {
 		panic("need the PORT env var")
 	}
 
-	// create a new instance of our client application
-	c, err := grpcclient.New(
-		grpcclient.WithHost(fmt.Sprintf(address, port)),
-		grpcclient.WithDialOptions(opts...),
-	)
+	// implement a grpc client
+
+	conn, err := grpc.Dial(fmt.Sprintf(address, port), opts...)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 
-	defer func() { _ = c.Close() }()
-	// start our client running with no input
-	c.Run(ctx)
-	// reuse the client and add some names
-	c.Run(ctx, "Tom", "Orson", "Kurt")
+	helloClient := go_example.NewHelloServiceClient(conn)
+
+	hello, err := helloClient.Hello(ctx, &go_example.HelloRequest{})
+	if err != nil {
+		logger.Error(ctx, "helloservice hello", zap.Error(err))
+		return
+	}
+
+	fmt.Println(hello.Response)
+
+	coffeeClient := go_example.NewCoffeeServiceClient(conn)
+	coffee, err := coffeeClient.Coffee(ctx, &go_example.CoffeeRequest{
+		Type:   "espresso",
+		Source: "DB",
+	})
+
+	fmt.Println(coffee)
 }
