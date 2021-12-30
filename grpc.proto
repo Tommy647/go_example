@@ -27,7 +27,8 @@ message CoffeeResponse {
   string Price = 1; // response string with the price
 }
 
-
+// Coffee service allow to request for a coffee, if the coffee requested is present in the DB
+// its price is returned, otherwise a free drink is returned
 service CoffeeService {
   rpc Coffee (CoffeeRequest) returns (CoffeeResponse);
 }

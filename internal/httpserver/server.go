@@ -105,6 +105,8 @@ func HandleCoffee() http.Handler {
 			return
 		}
 		query := r.URL.Query()
+
+		// http://127.0.0.1:8080/coffee?drink=
 		_, _ = w.Write([]byte(g.CoffeeGreet(r.Context(), query.Get("drink"))))
 	})
 }
