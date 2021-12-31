@@ -98,6 +98,8 @@ func getGreeter() grpcserver.GreetProvider {
 	return _greeter.New()
 }
 
+// getCoffeeGreeter assumes the use of a DB, however during the preparation of the DBGreeter
+// the operation can revert to a basicGreeter
 func getCoffeeGreeter() grpcserver.CoffeeProvider {
 	logger.Info(context.Background(), "using database greeter")
 	db, err := _db.NewConnection()

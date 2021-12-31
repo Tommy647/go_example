@@ -79,7 +79,7 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, coffeeType string) string {
 	basicGreeter := greeter.New()
 
 	rows, err := g.db.QueryContext(ctx, queryCoffee, coffeeType)
-	if err != nil { // If we found a problem with the query we return a basicGreeter
+	if err != nil { // If we don't find the requested kind of coffee we return a basicGreeter
 		logger.Error(ctx, "coffeeGreet query", zap.Error(err))
 		log.Println("sorry can't get you a coffee from db")
 		return basicGreeter.CoffeeGreet(ctx, coffeeType)
@@ -87,7 +87,7 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, coffeeType string) string {
 	// placeholder for value from DB
 	out := coffeeType
 	for rows.Next() {
-		if err := rows.Scan(&out); err != nil {
+		if err := rows.Scan(&out); err != nil { // If there is a problem scanning the rows we return a basicGreeter
 			logger.Error(ctx, "coffeeGreet scan", zap.Error(err))
 			if err = rows.Close(); err != nil {
 				logger.Error(ctx, "greet row close", zap.Error(err))

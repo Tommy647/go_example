@@ -62,6 +62,7 @@ func NewCS(c CoffeeProvider) *CoffeeServer {
 	}
 }
 
+// Coffee responds to the Coffee gRPC call
 func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequest) (*go_example.CoffeeResponse, error) {
 	logger.Info(ctx, "call to Coffee")
 	select {
@@ -70,6 +71,5 @@ func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequ
 	default: // intentionally left blank
 	}
 	return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx,
-			request.GetType())},
-		nil
+		request.GetType())}, nil
 }
