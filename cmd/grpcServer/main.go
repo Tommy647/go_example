@@ -73,6 +73,8 @@ func main() {
 	// 'register' our gRPC service with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.NewHS(getGreeter()))
 	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.NewCS(getCoffeeGreeter()))
+	go_example.RegisterFruitServiceServer(gRPCServer, grpcserver.FruitServer.Fruit())
+
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far
@@ -99,7 +101,7 @@ func getGreeter() grpcserver.GreetProvider {
 }
 
 // getCoffeeGreeter assumes the use of a DB, however during the preparation of the DBGreeter
-// the operation can revert to a basicGreeter
+// the operation can revert to a basicGreeter which serves drinks from strings
 func getCoffeeGreeter() grpcserver.CoffeeProvider {
 	logger.Info(context.Background(), "using database greeter")
 	db, err := _db.NewConnection()

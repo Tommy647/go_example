@@ -2,6 +2,7 @@ package grpcserver
 
 import (
 	"context"
+	"strings"
 
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/logger"
@@ -72,4 +73,24 @@ func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequ
 	}
 	return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx,
 		request.GetType())}, nil
+}
+
+type FruitServer struct{}
+
+func (fS *FruitServer) Fruit(ctx context.Context, req *go_example.FruitRequest) (*go_example.FruitResponse, error) {
+	logger.Info(ctx, "call to fruit")
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default: // Intentionally left blank
+	}
+	backEnd := strings.ToLower(req.GetBackEnd())
+	switch backEnd {
+	case "db":
+		return &go_example.FruitResponse{
+			UnitPrice:    "",
+			TotalPrice:   "",
+			Availability: "",
+		}, nil
+	}
 }
