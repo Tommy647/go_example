@@ -1,0 +1,2 @@
+CREATE INDEX idx_from_fruit
+ON public.fruit ("fruit_name");
