@@ -15,3 +15,46 @@ service HelloService {
   // Hello a simple request/response example
   rpc Hello (HelloRequest) returns (HelloResponse);
 }
+
+message Router {
+  string ID = 1;
+  string Hostname = 2;
+  string Vendor = 3;
+  string MgmtIP = 4;
+}
+
+service RouterService {
+  rpc GetRouter (GetRouterRequest) returns (GetRouterResponse);
+  rpc AddRouter (AddRouterRequest) returns (AddRouterResponse);
+  rpc DeleteRouter (DeleteRouterRequest) returns (DeleteRouterResponse);
+}
+
+// -- Get Router Message Types --
+
+message GetRouterRequest {
+  string id = 1;
+}
+
+message GetRouterResponse {
+  Router router = 1;
+}
+
+// -- Add Router Message Types --
+
+message AddRouterRequest {
+  Router router = 1;
+}
+
+message AddRouterResponse {
+  Router router = 1;
+}
+
+// -- Delete Router Message Types --
+
+message DeleteRouterRequest {
+  Router router = 1;
+}
+
+message DeleteRouterResponse {
+  string status = 1;
+}
