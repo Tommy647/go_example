@@ -52,7 +52,7 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 
 type RouterService interface {
 	GetRouterByID(ctx context.Context, id string) (rtr.Router, error)
-	InsertRouter(ctx context.Context, rkt rtr.Router) (rtr.Router, error)
+	InsertRouter(ctx context.Context, rtr rtr.Router) (rtr.Router, error)
 	DeleteRouter(ctx context.Context, id string) error
 }
 
