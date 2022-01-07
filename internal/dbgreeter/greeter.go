@@ -18,6 +18,9 @@ const (
 
 	// query to get the price of the requested coffee
 	queryCoffee = `SELECT "price" FROM "public"."coffee" WHERE "coffee_type" = $1 LIMIT 1`
+
+	// query to get the unit_price of the requested fruit
+	queryFruit = `SELECT "unit_price" FROM "public"."fruit" WHERE "name" = $1 LIMIT 1`
 )
 
 // New returns a new instance of our database greeter
@@ -104,4 +107,33 @@ func (g *DBGreeter) CoffeeGreet(ctx context.Context, coffeeType string) string {
 	}
 	// We return with a basicGreeter
 	return basicGreeter.CoffeeGreet(ctx, coffeeType)
+}
+
+func (g *DBGreeter) FruitGreet(ctx context.Context, fruit string) string {
+	logger.Info(ctx, "building the response for a Fruit request")
+	// We grab a new instance of a BasicGreeter
+	basicGreeter := greeter.New()
+	rows, err := g.db.QueryContext(ctx, queryFruit, fruit)
+	if err != nil {
+		logger.Error(ctx, "fruitGreet query", zap.Error(err))
+		log.Println("sorry can't get you that fruit from DB")
+		return basicGreeter.FruitGreet(ctx, fruit)
+	}
+
+	out := fruit
+	for rows.Next() {
+		if err := rows.Scan(&out); err != nil {
+			logger.Error(ctx, "fruitGreet scan", zap.Error(err))
+			if err = rows.Close(); err != nil {
+				logger.Error(ctx, "FruitGreet row close", zap.Error(err))
+			}
+			return basicGreeter.FruitGreet(ctx, fruit)
+		}
+		log.Println("fruit found in DB")
+		return out
+	}
+	if err := rows.Err(); err != nil {
+		logger.Error(ctx, "fruitGreet row", zap.Error(err))
+	}
+	return basicGreeter.FruitGreet(ctx, fruit)
 }

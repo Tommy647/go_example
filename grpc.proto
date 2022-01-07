@@ -35,15 +35,11 @@ service CoffeeService {
 
 message FruitRequest {
   string Fruit = 1; // This is the kind of the requested fruit
-  string State = 2;  // This is the state of the requested fruit: Ripe, green
-  string Weight = 3; // This is the requested quantity of fruit in Kgs.
-  string BackEnd= 4; // This is the preferred backend to provide the information: Basic, DB, File ...
+  string BackEnd= 2; // This is the preferred backend to provide the information: Basic, DB, File ...
 }
 
 message FruitResponse {
   string UnitPrice = 1;
-  string TotalPrice = 2;
-  string Availability = 3;
 }
 
 service FruitService {

@@ -4,6 +4,12 @@ import (
 	"context"
 	"strings"
 
+	"github.com/Tommy647/go_example/internal/greeter"
+
+	"github.com/Tommy647/go_example/internal/dbgreeter"
+
+	"github.com/Tommy647/go_example/internal/db"
+
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/logger"
 )
@@ -37,7 +43,7 @@ type HelloServer struct {
 }
 
 // Hello responds to the Hello gRPC call
-func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest) (*go_example.HelloResponse, error) {
+func (hS HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest) (*go_example.HelloResponse, error) {
 	logger.Info(ctx, "call to Hello") // , zap.String("name", request.Name))
 	// ensure our context is still valid
 	select {
@@ -46,7 +52,7 @@ func (h HelloServer) Hello(ctx context.Context, request *go_example.HelloRequest
 	default: // intentionally blank
 	}
 
-	return &go_example.HelloResponse{Response: h.greeter.Greet(ctx, request.GetName())}, nil
+	return &go_example.HelloResponse{Response: hS.greeter.Greet(ctx, request.GetName())}, nil
 }
 
 type CoffeeProvider interface {
@@ -64,19 +70,26 @@ func NewCS(c CoffeeProvider) *CoffeeServer {
 }
 
 // Coffee responds to the Coffee gRPC call
-func (c CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequest) (*go_example.CoffeeResponse, error) {
+func (cS CoffeeServer) Coffee(ctx context.Context, request *go_example.CoffeeRequest) (*go_example.CoffeeResponse, error) {
 	logger.Info(ctx, "call to Coffee")
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	default: // intentionally left blank
 	}
-	return &go_example.CoffeeResponse{Price: c.coffeer.CoffeeGreet(ctx,
+	return &go_example.CoffeeResponse{Price: cS.coffeer.CoffeeGreet(ctx,
 		request.GetType())}, nil
 }
 
+// NewFS provides an instance of FruitServer{} which gives access to the Fruit() method.
+func NewFS() *FruitServer {
+	return &FruitServer{}
+}
+
+// FruitServer allows to create the Fruit() method needed to get the gRPC service work on the Fruit API
 type FruitServer struct{}
 
+// Fruit is the method implementation to actually serve the gRPC response
 func (fS *FruitServer) Fruit(ctx context.Context, req *go_example.FruitRequest) (*go_example.FruitResponse, error) {
 	logger.Info(ctx, "call to fruit")
 	select {
@@ -85,12 +98,21 @@ func (fS *FruitServer) Fruit(ctx context.Context, req *go_example.FruitRequest) 
 	default: // Intentionally left blank
 	}
 	backEnd := strings.ToLower(req.GetBackEnd())
+	fruit := req.GetFruit()
 	switch backEnd {
 	case "db":
-		return &go_example.FruitResponse{
-			UnitPrice:    "",
-			TotalPrice:   "",
-			Availability: "",
-		}, nil
+		dBConn, error := db.NewConnection()
+		if error != nil {
+			logger.Error(ctx, "error opening DB connection")
+			return nil, error
+		}
+
+		db := dbgreeter.New(dBConn)
+		return &go_example.FruitResponse{UnitPrice: db.FruitGreet(ctx, fruit)}, nil
+	case "":
+		r := greeter.New()
+		return &go_example.FruitResponse{UnitPrice: r.FruitGreet(ctx, fruit)}, nil
 	}
+
+	return nil, nil
 }

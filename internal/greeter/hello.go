@@ -15,6 +15,10 @@ const (
 	defaultCoffee = `How can we help?`
 	// freeCoffee is used when the specified coffee has no entry in the DB
 	freeCoffee = `Free %s served from strings`
+	// defaultFruit is used when no fruit was specified in the request
+	defaultFruit = `How can we help?`
+	// freeFruit is used when the specified fruit has no entry in the DB
+	freeFruit = `Free %s served from strings`
 )
 
 // New instance of a string greeter
@@ -41,4 +45,12 @@ func (BasicGreeter) CoffeeGreet(_ context.Context, in string) string {
 		return fmt.Sprintf(freeCoffee, in)
 	}
 	return fmt.Sprintf(drink)
+}
+
+func (BasicGreeter) FruitGreet(_ context.Context, in string) string {
+	item := defaultFruit
+	if in != "" {
+		return fmt.Sprintf(freeFruit, in)
+	}
+	return fmt.Sprintf(item)
 }

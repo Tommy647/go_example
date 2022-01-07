@@ -1,19 +1,18 @@
 CREATE TABLE IF NOT EXISTS public.fruit(
     "id" serial NOT NULL PRIMARY KEY,
-    "fruit_name" TEXT,
-    "fruit_state" TEXT,
-    "fruit_total_weight" INT
+    "name" TEXT,
+    "unit_price" INT
 );
 
-INSERT INTO public.fruit(fruit_name, fruit_state, fruit_total_weight) VALUES
-    ('apple', 'ripe', 550);
-INSERT INTO public.fruit(fruit_name, fruit_state, fruit_total_weight) VALUES
-    ('pear', 'ripe', 350);
-INSERT INTO public.fruit(fruit_name, fruit_state, fruit_total_weight) VALUES
-    ('orange', 'ripe', 600);
-INSERT INTO public.fruit(fruit_name, fruit_state, fruit_total_weight) VALUES
-    ('grape', 'ripe', 800);
-INSERT INTO public.fruit(fruit_name, fruit_state, fruit_total_weight) VALUES
-    ('mango', 'ripe', 600);
-INSERT INTO public.fruit(fruit_name, fruit_state, fruit_total_weight) VALUES
-    ('banana', 'ripe', 450);
+INSERT INTO public.fruit(name, unit_price) VALUES
+    ('apple', 160);
+INSERT INTO public.fruit(name, unit_price) VALUES
+    ('pear', 110);
+INSERT INTO public.fruit(name, unit_price) VALUES
+    ('orange',90);
+INSERT INTO public.fruit(name, unit_price) VALUES
+    ('grape', 250);
+INSERT INTO public.fruit(name, unit_price) VALUES
+    ('mango', 400);
+INSERT INTO public.fruit(name, unit_price) VALUES
+    ('banana', 450);

@@ -70,10 +70,12 @@ func main() {
 	gRPCServer := grpc.NewServer(opts...)
 	// @todo: this grpcServer.GracefulStop()
 
+	// We grab an instance of our fruitServer
+	fS := grpcserver.NewFS()
 	// 'register' our gRPC service with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.NewHS(getGreeter()))
 	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.NewCS(getCoffeeGreeter()))
-	go_example.RegisterFruitServiceServer(gRPCServer, grpcserver.FruitServer.Fruit())
+	go_example.RegisterFruitServiceServer(gRPCServer, fS)
 
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
@@ -109,5 +111,4 @@ func getCoffeeGreeter() grpcserver.CoffeeProvider {
 		panic("database" + err.Error())
 	}
 	return dbgreeter.New(db)
-
 }
