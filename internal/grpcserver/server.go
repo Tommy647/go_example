@@ -101,14 +101,14 @@ func (fS *FruitServer) Fruit(ctx context.Context, req *go_example.FruitRequest) 
 	fruit := req.GetFruit()
 	switch backEnd {
 	case "db":
-		dBConn, error := db.NewConnection()
-		if error != nil {
+		dBConn, err := db.NewConnection()
+		if err != nil {
 			logger.Error(ctx, "error opening DB connection")
-			return nil, error
+			return nil, err
 		}
 
-		db := dbgreeter.New(dBConn)
-		return &go_example.FruitResponse{UnitPrice: db.FruitGreet(ctx, fruit)}, nil
+		d := dbgreeter.New(dBConn)
+		return &go_example.FruitResponse{UnitPrice: d.FruitGreet(ctx, fruit)}, nil
 	case "":
 		r := greeter.New()
 		return &go_example.FruitResponse{UnitPrice: r.FruitGreet(ctx, fruit)}, nil

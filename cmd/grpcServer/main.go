@@ -46,7 +46,12 @@ func main() {
 	if err = logger.New(`go_example_grpc`); err != nil {
 		panic(err.Error())
 	}
-	defer logger.Close()
+	defer func() {
+		err := logger.Close()
+		if err != nil {
+			fmt.Println("logger could not close")
+		}
+	}()
 	logger.Debug(context.Background(), "application logger started")
 
 	// define any server options we want to apply
