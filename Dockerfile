@@ -11,7 +11,7 @@ RUN go mod download
 
 # copy the remaining files
 COPY . .
-
+ADD /db/networkDBMigrations /db/networkDBMigrations
 # disable CGO, forces go to build staticly without clibs
 ENV CGO_ENABLED 0
 
@@ -24,6 +24,8 @@ RUN go build -o jwt cmd/jwtProvider/main.go
 RUN go build -o httpserver cmd/httpserver/main.go
 # build the grpcServer binary
 RUN go build -o grpcserver cmd/grpcServer/main.go
+# build the networkMGMT binary
+RUN go build -o networkMGMT cmd/networkMGMT/main.go
 
 # create a fresh image, without the go toolset
 FROM alpine:3.14 AS grpcserver
@@ -51,3 +53,13 @@ COPY --from=builder /app/jwt .
 EXPOSE 8081
 # command we run when starting the container
 CMD ./jwt
+
+# create a fresh image, without the go toolset
+FROM alpine:3.14 AS networkMGMT
+# copy over the binary we built above
+COPY --from=builder /app/networkMGMT .
+COPY --from=builder /db/networkDBMigrations /db/networkDBMigrations
+# expose our working port
+EXPOSE 9091
+# command we run when starting the container
+CMD ./networkMGMT
