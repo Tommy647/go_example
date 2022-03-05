@@ -85,7 +85,7 @@ func BuildConfig() *ssh.ClientConfig {
 	return config
 }
 
-func NetconfConn() {
+func Conn() {
 
 	flag.Parse()
 
@@ -102,6 +102,7 @@ func NetconfConn() {
 	}
 	defer s.Close()
 
+	// show system information | display xml
 	reply, err := s.Exec(netconf.RawMethod("<get-system-information/>"))
 	if err != nil {
 		panic(err)
@@ -115,4 +116,5 @@ func NetconfConn() {
 	fmt.Printf("hostname: %s\n", q.HostName)
 	fmt.Printf("model: %s\n", q.HardwareModel)
 	fmt.Printf("version: %s\n", q.OsVersion)
+	fmt.Printf("serial: %s\n", q.SerialNumber)
 }
