@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS public.inventory (
+   "id" serial NOT NULL PRIMARY KEY,
+   "hostname" TEXT,
+   "ip" TEXT,
+   "vendor" TEXT,
+   "model" TEXT,
+   "token" TEXT,
+   "type" TEXT,
+   "lab" TEXT
+);
+
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('P-01', '192.168.123.21', 'cisco', 'csr', '', 'router');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('PA-01', '192.168.123.22', 'cisco', 'csr', '', 'router');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('PB-01', '192.168.123.23', 'cisco', 'csr', '', 'router');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('PE-A1', '192.168.123.24', 'cisco', 'csr', '', 'router');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('PE-A2', '192.168.123.44', 'cisco', 'csr', '', 'router');
