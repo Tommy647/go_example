@@ -1,0 +1,2 @@
+CREATE INDEX idx_from_inventory
+ON public.inventory ("hostname");

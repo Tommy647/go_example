@@ -10,12 +10,34 @@ CREATE TABLE IF NOT EXISTS public.inventory (
 );
 
 INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
-('P-01', '192.168.123.21', 'cisco', 'csr', '', 'router');
+('P-01', '192.168.123.21', 'cisco', 'csr', '', 'router', '08');
 INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
-('PA-01', '192.168.123.22', 'cisco', 'csr', '', 'router');
+('PA-01', '192.168.123.22', 'cisco', 'csr', '', 'router', '08');
 INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
-('PB-01', '192.168.123.23', 'cisco', 'csr', '', 'router');
+('PB-01', '192.168.123.23', 'cisco', 'csr', '', 'router', '08');
 INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
-('PE-A1', '192.168.123.24', 'cisco', 'csr', '', 'router');
+('PE-A1', '192.168.123.24', 'cisco', 'csr', '', 'router', '08');
 INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
-('PE-A2', '192.168.123.44', 'cisco', 'csr', '', 'router');
+('PE-A2', '192.168.123.44', 'cisco', 'csr', '', 'router', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('PE-B1', '192.168.123.25', 'cisco', 'csr', '', 'router', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('PE-B2', '192.168.123.45', 'cisco', 'csr', '', 'router', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('FW-A1', '192.168.123.28', 'juniper', 'vsrx', '', 'firewall', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('FW-B1', '192.168.123.29', 'juniper', 'vsrx', '', 'firewall', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('RA-1', '192.168.123.26', 'juniper', 'vmx', '', 'router', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('RB-1', '192.168.123.27', 'juniper', 'vmx', '', 'router', '08');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('bigip18-A-chicky', '192.168.0.5', 'f5', 'vm', '', 'loadbalancer', 'all');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('R2', '192.168.0.122', 'cisco', 'csr', '', 'router', '03');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('R1', '192.168.0.123', 'juniper', 'vmx', '', 'router', '03');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('FW1', '192.168.0.121', 'juniper', 'vsrx', '', 'firewall', '03');
+INSERT INTO public.inventory ("hostname", "ip", "vendor", "model", "token", "type", "lab") VALUES
+('ftg-a-chicky', '192.168.0.15', 'fortinet', 'vm', '', 'firewall', 'all');
