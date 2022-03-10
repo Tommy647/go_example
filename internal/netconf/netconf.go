@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"syscall"
+
+	"github.com/Tommy647/go_example/internal/jnprsvc"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -17,7 +20,7 @@ import (
 )
 
 var (
-	host         = flag.String("host", "R1", "Hostname")
+	host         = flag.String("host", "RA-1", "Hostname")
 	username     = flag.String("username", "", "Username")
 	key          = flag.String("key", os.Getenv("HOME")+"/.ssh/id_rsa", "SSH private key file")
 	passphrase   = flag.String("passphrase", "", "SSH private key passphrase (cleartext)")
@@ -113,8 +116,44 @@ func Conn() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("hostname: %s\n", q.HostName)
-	fmt.Printf("model: %s\n", q.HardwareModel)
-	fmt.Printf("version: %s\n", q.OsVersion)
-	fmt.Printf("serial: %s\n", q.SerialNumber)
+	// fmt.Printf("hostname: %s\n", q.HostName)
+	// fmt.Printf("model: %s\n", q.HardwareModel)
+	// fmt.Printf("version: %s\n", q.OsVersion)
+	// fmt.Printf("serial: %s\n", q.SerialNumber)
+
+	// show route instance summary
+	reply, err = s.Exec(netconf.RawMethod("<get-instance-information><summary/></get-instance-information>"))
+	if err != nil {
+		panic(err)
+	}
+
+	r := jnprsvc.NewInstanceInformation()
+
+	err = xml.Unmarshal([]byte(reply.RawReply), r)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i := range r.InstanceInformation.InstanceCore {
+		if !strings.HasPrefix(r.InstanceInformation.InstanceCore[i].InstanceName, "__") {
+			fmt.Println(r.InstanceInformation.InstanceCore[i].InstanceName)
+		}
+	}
+
+	reply, err = s.Exec(netconf.RawMethod("<get-route-information><logical-system>all</logical-system></get-route-information>"))
+	if err != nil {
+		panic(err)
+	}
+
+	t := jnprsvc.NewRTs()
+	err = xml.Unmarshal([]byte(reply.RawReply), t)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(len(t.Output))
+	fmt.Println(len(t.RouteInformation.RouteTable))
+	for j := range t.Output {
+		fmt.Println(t.Output[j])
+		fmt.Println(t.RouteInformation.RouteTable[j].TableName)
+	}
+	fmt.Println(t.RouteInformation.RouteTable[len(t.RouteInformation.RouteTable)-1].TableName)
 }
