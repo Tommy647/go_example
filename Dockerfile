@@ -26,7 +26,7 @@ RUN go build -o httpserver cmd/httpserver/main.go
 RUN go build -o grpcserver cmd/grpcServer/main.go
 
 # create a fresh image, without the go toolset
-FROM alpine:3.15 AS grpcserver
+FROM alpine:3.16 AS grpcserver
 # copy over the binary we built above
 COPY --from=builder /app/grpcserver .
 # expose our working port
@@ -35,7 +35,7 @@ EXPOSE 9090
 CMD ./grpcserver
 
 # create a fresh image, without the go toolset
-FROM alpine:3.15 AS httpserver
+FROM alpine:3.16 AS httpserver
 # copy over the binary we built above
 COPY --from=builder /app/httpserver .
 # expose our working port
@@ -44,7 +44,7 @@ EXPOSE 8080
 CMD ./httpserver
 
 # create a fresh image, without the go toolset
-FROM alpine:3.15 as jwtserver
+FROM alpine:3.16 as jwtserver
 # copy over the binary we built above
 COPY --from=builder /app/jwt .
 # expose our working port
