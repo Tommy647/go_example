@@ -1,18 +1,47 @@
-## build and start the stack in docker
-docker/start: go/generate docker/build
-	@-docker compose up -d --build
-	@-${MAKE} -f make/Makefile.database database/migration/init
+## Build and start the stack in docker
+docker/start:  _docker/support_stack _docker/run database/migration/init
 
-## stop all the docker containers
+## rebuild and restart our applications, not the support stack
+docker/restart: _docker/run
+
+# # run our application stack, need vault and db to be up and running first
+_docker/run: docker/build
+	VAULT_TOKEN=$$(${MAKE} -s vault/token) docker stack deploy -c go_example-stack.yml go_example
+	@docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example
+
+# # create a docker network so our stacks can talk to each other
+_docker/network:
+	@echo creating docker network
+	@-docker network create -d overlay go_example > /dev/null 2>&1
+
+# # support applications in a separate stack to our application
+_docker/support_stack: _docker/network certs
+	@echo Starting support containers
+	@docker stack deploy -c support-stack.yml go_example_support > /dev/null 2>&1
+	@docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait go_example_support
+	@${MAKE} -s vault/populate
+	@sleep 30 # kibana is show and docker health checks are buggy :/
+	@curl -X POST "http://0.0.0.0:5601/api/saved_objects/index-pattern/logstash" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d'{"attributes": {"title": "logstash-*","timeFieldName": "@timestamp"}}' > /dev/null 2>&1
+
+## Stop all the docker containers
 docker/stop:
-	@docker compose down
+	@-docker stack rm go_example go_example_support
+	@-docker network rm go_example
 
-## tail the docker logs
+## Tail the docker logs
 docker/logs:
-	@docker compose logs -f -t
+	@echo Not currently able to get all logs when running in \"docker stack\" mode
+	@echo Run \"docker service logs -f\" and pass a service name, where the service names are:
+	@docker service ls | grep -v ID | awk '{ print "\t"$$2 }'
 
-## build the project docker images
-docker/build:
-	@-docker build --tag grpcserver --target grpcserver .
-	@-docker build --tag httpserver --target httpserver .
-	@-docker build --tag jwtserver --target jwtserver .
+## Build the project docker images
+docker/build: go/generate
+	@echo "Building images"
+	@-docker build --quiet --tag grpcserver --target grpcserver . >/dev/null
+	@-docker build --quiet --tag httpserver --target httpserver . >/dev/null
+	@-docker build --quiet --tag jwtserver --target jwtserver . >/dev/null
+
+# # docker specific requirement checks
+_docker/requirements:
+	@-which docker &>/dev/null || echo docker missing:
+	@-docker compose version &>/dev/null || echo docker compose missing: https://github.com/docker/compose/tree/v2

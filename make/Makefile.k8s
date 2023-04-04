@@ -1,4 +1,22 @@
+# # start a local kubernetes cluster
+k8s/minikube/start:
+	@minikube start
 
-## get all pods in minikube
-k8s/get_pods:
-	@minikube kubectl -- get pods -A
+# # start a local kubernetes cluster
+k8s/minikube/stop:
+	@minikube stop
+
+# #  get all pods in minikube
+k8s/minikube/get_pods:
+	@kubectl get pods -A
+
+# # check kubectrl is connected our local cluster and present api endpoints
+k8s/cluster-check:
+	@kubectl cluster-info || (echo no k8s cluster configured. Set up kubectl to access a cluster or run \"make k8s/minikube/start\" to run one locally && false)
+
+# # Tools to manage and run a local kubernetes cluster
+_k8s/requirements:
+	@-which go &>/dev/null || echo go missing
+	@-which kubectl &>/dev/null || echo kubectl missing https://kubernetes.io/docs/tasks/tools/
+	@-kubectl version &>/dev/null || echo kubectl needs configuring, if you need a k8s cluster checkout https://minikube.sigs.k8s.io/docs/start/
+	@-which minikube &>/dev/null || echo minikube missing https://kubernetes.io/docs/tasks/tools/ only required if you need a k8s cluster

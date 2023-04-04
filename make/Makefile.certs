@@ -1,0 +1,39 @@
+## generate new self-signed certificates
+certs: certs/service.pem
+
+## View the service.pem
+certs/view: certs/service.pem
+	@openssl x509 -in certs/service.pem -text -noout
+
+certs/ca.key:
+	@echo Creating $@
+	@openssl genrsa -out certs/ca.key 4096 > /dev/null 2>&1
+
+certs/ca.cert: certs/ca.key
+	@echo Creating $@
+	@openssl req -new -x509 -key certs/ca.key -sha256 -subj "/C=GB/ST=WY/O=T647, Inc." -days 365 -out certs/ca.cert > /dev/null 2>&1
+
+certs/service.key:
+	@echo Creating $@
+	@openssl genrsa -out certs/service.key 4096 > /dev/null 2>&1
+
+certs/service.csr: certs/service.key
+	@echo Creating $@
+	@openssl req -new -batch -key certs/service.key -out certs/service.csr -config certs/certificate.conf -extensions v3_req > /dev/null 2>&1
+
+certs/service.pem: certs/service.csr certs/ca.cert certs/ca.key
+	@echo Creating $@
+	@openssl x509 -req -in certs/service.csr -CA certs/ca.cert -CAkey certs/ca.key -CAcreateserial -out certs/service.pem -days 365 -sha256 -extfile certs/certificate.conf -extensions v3_req > /dev/null 2>&1
+
+_certs/clean:
+	@echo $@
+	@-rm *.pb.go \
+	certs/ca.* \
+	certs/*.key \
+	certs/*.cert \
+	certs/*.csr \
+	certs/*.pem \
+	certs/*.srl \
+	2> /dev/null ||:
+
+.PHONY: certs/view

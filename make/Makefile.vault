@@ -3,17 +3,21 @@ VAULT_TOKEN ?= $(ROOT_TOKEN)
 ROOT_TOKEN ?= 12345678
 
 VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(VAULT_TOKEN) vault
-
-MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+ROOT_VAULT_CMD=VAULT_ADDR=$(VAULT_ADDR) VAULT_TOKEN=$(ROOT_TOKEN) vault
 
 ## get the web address for our vault instance
 vault/ui:
 	@echo $(VAULT_ADDR)
 
+## get the vault environment variables call `$(make vault/env)` to add them to your session
+vault/env:
+	@echo export VAULT_ADDR=$(VAULT_ADDR)
+	@echo export VAULT_TOKEN=$(VAULT_TOKEN)
+
 ## create a new token
 vault/token:
-	$(eval TOKEN:=$(shell $(VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
-	@echo $(TOKEN)
+	$(eval VAULT_TOKEN:=$(shell $(ROOT_VAULT_CMD) token create | grep "token\s" | awk '{ print $$2 }'))
+	@echo $(VAULT_TOKEN)
 
 ## list all our secrets
 vault/list:
@@ -21,7 +25,14 @@ vault/list:
 
 ## add a secret to vault using KEY=key_name and VALUE=value_string
 vault/key/add:
-	@$(VAULT_CMD) kv put secret/$(KEY) ${VALUE}
+	$(VAULT_CMD) kv put secret/go_example $(KEY)=${VALUE}
 
-vault/test:
-	@$(MAKE) -f $(MKFILE_PATH) vault/key/add KEY=tommy VALUE="last_name=Smith title=Mr"
+## upload self-signed certificates to vault
+vault/populate: certs
+	@echo Populating Vault with our certificates
+	@$(ROOT_VAULT_CMD) kv put secret/certificates "updated_at"="`date`" > /dev/null # need the key to exist
+	@for f in $(shell ls certs | grep -v conf); do  $(ROOT_VAULT_CMD) kv patch secret/certificates $${f}=@certs/$${f} > /dev/null ; done # #todo: we can do this with one blob of json
+
+# # Check the vault specific requirements
+_vault/requirements:
+	@-which vault &>/dev/null || echo vault missing: https://learn.hashicorp.com/tutorials/vault/getting-started-install

@@ -4,6 +4,7 @@ import "net/http"
 
 // Default middleware to apply to every call
 var Default = []func(handler http.Handler) http.Handler{
+	WithTrace,
 	WithBasicTelemetry,
 }
 
@@ -25,3 +26,17 @@ func WithDefault(next http.Handler, secure ...bool) http.Handler {
 	}
 	return next
 }
+
+/*
+	1. next = httpserver.HandleHello()
+	2. next = WithAuth(httpserver.HandleHello)
+	3. next = WithBasicTelemetry(WithAuth(httpserver.HandleHello))
+
+	request ->
+		WithBasicTelemetry(
+			WithAuth(
+				httpserver.HandleHello()
+			)
+		)
+
+*/
