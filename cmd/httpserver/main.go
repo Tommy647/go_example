@@ -47,6 +47,10 @@ func serve(ctx context.Context) error {
 		"/hello",
 		middleware.WithDefault(httpserver.HandleHello(), true),
 	)
+	mux.Handle(
+		"/greet",
+		middleware.WithDefault(httpserver.HandleGreet(), true),
+	)
 
 	srv := &http.Server{
 		Addr:    ":8080",

@@ -9,3 +9,7 @@ jwt/get_token:
 ## make a hello request with a token
 jwt/hello: jwt/get_token
 	curl -H "Authorization: Bearer $(JWT)" localhost:8080/hello
+
+## make a greeting request with a token
+jwt/greet: jwt/get_token
+	curl -H "Authorization: Bearer $(JWT)" localhost:8080/greet?greeting=Welcome

@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"github.com/Tommy647/go_example"
+	"github.com/Tommy647/go_example/internal/customgreeter"
 	"github.com/Tommy647/go_example/internal/dbgreeter"
 	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
@@ -44,6 +45,7 @@ func main() {
 
 	// decide which function to run
 	var greeter grpcserver.GreetProvider = _greeter.New()
+	var customGreeter grpcserver.CustomGreetProvider
 	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {
@@ -51,9 +53,11 @@ func main() {
 		}
 		greeter = dbgreeter.New(db)
 	}
-
 	// 'register' our gRPC service with the newly created gRPC server
 	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(greeter))
+	customGreeter = customgreeter.New()
+	// 'register' our second gRPC service with the newly created gRPC server
+	go_example.RegisterCustomGreeterServiceServer(gRPCServer, grpcserver.NewGreeter(customGreeter))
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far
