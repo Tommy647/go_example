@@ -23,7 +23,8 @@ func WithAuth(next http.Handler) http.Handler {
 			_, _ = w.Write([]byte(err.Error()))
 		}
 
-		claims, err := jwt.GetClaims(tokenString)
+		var claims *jwt.CustomClaims
+		claims, err = jwt.GetClaims(tokenString)
 		if err != nil {
 			log.Println("oops! no valid token present after parsing")
 			w.WriteHeader(http.StatusForbidden)

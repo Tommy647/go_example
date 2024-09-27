@@ -3,13 +3,13 @@ package grpcserver
 import (
 	"context"
 	"errors"
+	"github.com/Tommy647/go_example/internal/greeter"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 
 	grpc "github.com/Tommy647/go_example"
-	"github.com/Tommy647/go_example/internal/greeter"
 )
 
 func TestHelloWorldServer_HelloWorld(t *testing.T) {
@@ -56,7 +56,7 @@ func TestHelloWorldServer_HelloWorld(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), tc.ctxTimeout)
 			defer cancel()
 
-			got, err := (HelloServer{greeter: greeter.BasicGreeter{}}).Hello(ctx, tc.in)
+			got, err := (HelloServer{greeter: greeter.Greet{}}).Hello(ctx, tc.in)
 
 			if tc.wantErr != nil {
 				assert.Error(t, err)

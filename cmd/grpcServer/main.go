@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"log"
 	"net"
 	"os"
@@ -15,7 +16,6 @@ import (
 
 	"github.com/Tommy647/go_example"
 	"github.com/Tommy647/go_example/internal/dbgreeter"
-	_greeter "github.com/Tommy647/go_example/internal/greeter"
 	"github.com/Tommy647/go_example/internal/grpcserver"
 )
 
@@ -31,7 +31,7 @@ const (
 
 func main() {
 	// create a tcp listener for your gRPC service
-	listener, err := net.Listen("tcp", "0.0.0.0:9090") //nolint:gosec // development use only
+	listener, err := net.Listen("tcp", "0.0.0.0:8088") //nolint:gosec // development use only
 	if err != nil {
 		panic(err.Error())
 	}
@@ -42,9 +42,11 @@ func main() {
 	gRPCServer := grpc.NewServer(opts...)
 	// @todo: this grpcServer.GracefulStop()
 
+
+
 	// decide which function to run
 	var greeter grpcserver.GreetProvider = _greeter.New()
-	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this is func ignores case
+	if strings.EqualFold(os.Getenv(envGreeter), "db") { // picked up by the linter, this func ignores case
 		db, err := sql.Open("postgres", getPostgresConnection())
 		if err != nil {
 			panic("database" + err.Error())
@@ -52,8 +54,21 @@ func main() {
 		greeter = dbgreeter.New(db)
 	}
 
-	// 'register' our gRPC service with the newly created gRPC server
-	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.New(greeter))
+	// The previous if statement checks for an Env var to be set to "db" to open a connection to the postgres DB
+	// The following will open another connection, regardless of any Env var being set. The Coffee service assumes
+	// that within the request the required source would be indicated, which means this can't be determined in advanced.
+
+	// Open another DB connection
+	dbConn, err := sql.Open("postgres", getPostgresConnection())
+	if err != nil {
+		log.Println("error opening the DB", err.Error())
+	}
+
+	var coffeer grpcserver.CoffeeProvider = dbgreeter.New(dbConn)
+
+	// 'register' our gRPC services with the newly created gRPC server
+	go_example.RegisterHelloServiceServer(gRPCServer, grpcserver.NewHS(greeter))
+	go_example.RegisterCoffeeServiceServer(gRPCServer, grpcserver.NewCS(coffeer))
 	// enable reflection for development, allows us to see the gRPC schema
 	reflection.Register(gRPCServer)
 	// let the user know we got this far

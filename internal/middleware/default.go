@@ -10,6 +10,7 @@ var Default = []func(handler http.Handler) http.Handler{
 // Secure middle ware for authorised endpoints
 var Secure = []func(handler http.Handler) http.Handler{
 	WithAuth,
+	WithRole,
 }
 
 // WithDefault wrap requests in middle ware, secure first, then default

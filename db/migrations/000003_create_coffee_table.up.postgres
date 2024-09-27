@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS public.coffee (
+    "id" serial NOT NULL PRIMARY KEY,
+    "type" TEXT,
+    "price" INT
+);
+
+INSERT INTO public.coffee ("type", "price") VALUES
+    ('Espresso', 160);
+INSERT INTO public.coffee ("type", "price") VALUES
+    ('Macchiato', 180);

@@ -19,8 +19,8 @@ type (
 	ctxUserKey string
 	// CustomClaims our jwt token as Go
 	CustomClaims struct {
-		Foo   string   `json:"foo"`
-		Roles []string `json:"roles"`
+		Username string   `json:"username"`
+		Roles    []string `json:"roles"`
 		_jwt.RegisteredClaims
 	}
 )
@@ -28,8 +28,8 @@ type (
 // New token dataset
 func New() CustomClaims {
 	return CustomClaims{
-		Foo:   "bar",
-		Roles: []string{"user", "hello"},
+		Username: "gus",
+		Roles:    []string{"operator", "admin", "db", "barista"},
 		RegisteredClaims: _jwt.RegisteredClaims{
 			Issuer:    "test",
 			Subject:   "somebody",
